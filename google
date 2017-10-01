@@ -1,0 +1,141 @@
+#!/bin/bash
+
+browser="google-chrome"
+bookmarks=~/.config/google-chrome/Default/Bookmarks
+mode="d"
+
+usage="\
+Usage: $(basename $0) [OPTIONS] URL
+Browser wrapper script. With no options given, google searches the URL string.
+  -d URL        Google search URL (default)
+  -l URL        Google lucky search URL
+  -f FILE       Open FILE with google-chrome
+  -b BOOKMARK   Search for bookmark instead of URL
+  -B BROWSER    Set browser to BROWSER (default google-chrome)
+  -M LOC        Change location of bookmark (default:
+                ~/.config/google-chrome.Default/Bookmarks)
+  -c            Curl the url instead
+  -w            Connect to website instead of google search
+  -n            Start in a new window
+  -o OPTIONS    Pass in OPTIONS to google-chrome. Quote for multiple arguments
+  -v            Print the full url to console before opening
+  -D            Run with '--disable-web-security' flag (development)
+  -h            Show this menu
+"
+#usage="\
+#Usage: $(basename $0) [OPTIONS] URL
+#Browser wrapper script. With no OPTIONS given, google searches the URL string.
+#  -l            Google lucky search URL
+#  -b            Search for bookmark labeled URL
+#  -B BROWSER    Set browser to BROWSER (default google-chrome)
+#  -M LOC        Change location of bookmark (default:
+#                ~/.config/google-chrome.Default/Bookmarks)
+#  -c            Curl the url instead and output to ./googleScript.hmtl
+#  -w            Use URL in the address bar
+#  -h            Show this menu
+#"
+
+function argsUntilNextValidOpt {
+  opts=-[lbwcBMnoh]
+  n=0
+  str=
+  shift
+  while ! [[ $1 =~ $opts ]] && [ ! -z $1 ]; do
+    str=$str" $1"
+    shift
+    ((n++))
+  done
+  ((n++))
+  echo $n "$str"
+}
+
+# could do optStack too
+curlmode=false
+silent=false
+options=
+declare -a urlStack
+urlStackIndex=0
+verbose=false
+
+if [ $# == 0 ]; then
+  urlStack[$urlStackIndex]='google.ca/'
+  ((urlStackIndex++))
+fi
+
+while [ "${1:0:1}" == "-" ]; do
+  arg="$1"
+  for ((i = 1; i < ${#arg}; i++)); do
+    case ${arg:$i:1} in
+      l | b | w | d)
+        mode=${arg:$i:1}
+        res=($(argsUntilNextValidOpt $*))
+        shift ${res[0]}
+        case $mode in
+          l)
+            urlStack[$urlStackIndex]="google.ca/search?ie=UTF-8&oe=UTF-8&sourceid=navclient&btnI=1&q=""${res[*]:1}";;
+          b)
+            line=$(egrep -A 4 "\"name\":\ \"${res[*]:1}\"" "$bookmarks" |grep -o "\"url\": \".*\"")
+            url=$(echo $line |cut -d '"' -f4)
+            if [ "$url" == "" ]; then
+              echo Could not find bookmark \'${res[*]:1}\'
+              exit 1
+            fi
+            urlStack[$urlStackIndex]=$url
+          ;;
+          w) urlStack[$urlStackIndex]="${res[*]:1}";;
+          d) urlStack[$urlStackIndex]="google.ca/#q=${res[*]:1}";;
+        esac
+        ((urlStackIndex++))
+      ;;
+      f)
+        urlStack[$urlStackIndex]="$2"
+        ((urlStackIndex++))
+        shift
+        [[ ${#arg} == 2 ]] && shift
+      ;;
+      c) curlmode=true && [[ ${#arg} == 2 ]] && shift;;
+      B) browser="$2" && shift && [[ ${#arg} == 2 ]] && shift;;
+      M) bookmarks="$2" && shift && [[ ${#arg} == 2 ]] && shift;;
+      D) options="$options --disable-web-security" && [[ ${#arg} == 2 ]] && shift;;
+      n) options="$options --new-window" && [[ ${#arg} == 2 ]] && shift;;
+      o) options="$options $2" && shift && [[ ${#arg} == 2 ]] && shift;;
+      h) echo "$usage" && exit 1;;
+      s) silent=true && [[ ${#arg} == 2 ]] && shift;;
+      v) verbose=true && [[ ${#arg} == 2 ]] && shift;;
+      *) echo "Unknow option \`$1'. Try $(basename $0) -h for more info" && exit 1;;
+    esac
+  done
+done
+
+# Still url to parse
+if [ ! -z $1 ]; then
+  urlStack[$urlStackIndex]='google.ca/#q='"$*"
+  ((urlStackIndex++))
+# Options given but no url
+elif [ "$urlStackIndex" -eq 0 ] && [ ! -z "$options" ]; then
+  ((urlStackIndex++))
+fi
+
+if $curlmode; then
+  exit 1
+  echo "Opening: $url"
+  if ! type html2text &>/dev/null; then
+    for ((i = 0; i < urlStackIndex; i++)); do
+      ${verbose} && echo "curl ${urlStack[$i]}"
+      curl "${urlStack[$i]}"
+    done
+  else
+    for ((i = 0; i < urlStackIndex; i++)); do
+      ${verbose} && echo "curl ${urlStack[$i]}"
+      curl "${urlStack[$i]}" |html2text -width 80 |tee googleScript.txt
+    done
+  fi
+else
+  for ((i = 0; i < urlStackIndex; i++)); do
+    ${verbose} && echo "$browser $options ${urlStack[$i]}"
+    "$browser" $options "${urlStack[$i]}" &>/dev/null &
+  done
+fi
+
+# --window-size=w,h
+# --window-position=x,y
