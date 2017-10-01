@@ -1,4 +1,4 @@
-#!/bin/bash
+##!/bin/bash
 
 browser="google-chrome"
 bookmarks=~/.config/google-chrome/Default/Bookmarks
@@ -8,6 +8,8 @@ touch $logfile
 mode="d"
 DEBUG=true
 # set -x
+#mobile
+bookmarks=./Bookmarks
 usage="\
 Usage: $(basename $0) [OPTIONS] URL
 Browser wrapper script. With no options given, google searches the URL string.

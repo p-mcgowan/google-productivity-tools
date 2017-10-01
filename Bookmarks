@@ -1,0 +1,18 @@
+{
+    {
+        "name": "mail"
+        "url": "bookmarkmail"
+        "url": "bookmarkmail"
+        "url": "bookmarkmail"
+        "url": "bookmarkmail"
+        "url": "bookmarkmail"
+    }
+    {
+        "name": "gmail"
+        "url": "bookmarkgmail"
+        "url": "bookmarkgmail"
+        "url": "bookmarkgmail"
+        "url": "bookmarkgmail"
+        "url": "bookmarkgmail"
+    }
+}
