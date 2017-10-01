@@ -2,8 +2,12 @@
 
 browser="google-chrome"
 bookmarks=~/.config/google-chrome/Default/Bookmarks
+logfile=~/tmp/google-script.log
+mkdir -p ~/tmp/
+touch $logfile
 mode="d"
-
+DEBUG=true
+# set -x
 usage="\
 Usage: $(basename $0) [OPTIONS] URL
 Browser wrapper script. With no options given, google searches the URL string.
@@ -11,32 +15,22 @@ Browser wrapper script. With no options given, google searches the URL string.
   -l URL        Google lucky search URL
   -f FILE       Open FILE with google-chrome
   -b BOOKMARK   Search for bookmark instead of URL
-  -B BROWSER    Set browser to BROWSER (default google-chrome)
-  -M LOC        Change location of bookmark (default:
-                ~/.config/google-chrome.Default/Bookmarks)
+  -w URL        Use URL as address instead of google searching
   -c            Curl the url instead
-  -w            Connect to website instead of google search
   -n            Start in a new window
   -o OPTIONS    Pass in OPTIONS to google-chrome. Quote for multiple arguments
   -v            Print the full url to console before opening
   -D            Run with '--disable-web-security' flag (development)
   -h            Show this menu
+
+  deprecated:
+  -B BROWSER    Set browser to BROWSER (default google-chrome)
+  -M BOOKMARKS  Use file BOOKMARKS to search for bookmarks (default:
+                ~/.config/google-chrome.Default/Bookmarks)
 "
-#usage="\
-#Usage: $(basename $0) [OPTIONS] URL
-#Browser wrapper script. With no OPTIONS given, google searches the URL string.
-#  -l            Google lucky search URL
-#  -b            Search for bookmark labeled URL
-#  -B BROWSER    Set browser to BROWSER (default google-chrome)
-#  -M LOC        Change location of bookmark (default:
-#                ~/.config/google-chrome.Default/Bookmarks)
-#  -c            Curl the url instead and output to ./googleScript.hmtl
-#  -w            Use URL in the address bar
-#  -h            Show this menu
-#"
 
 function argsUntilNextValidOpt {
-  opts=-[lbwcBMnoh]
+  opts=-[dlfbwcnovDhBM]
   n=0
   str=
   shift
@@ -54,12 +48,13 @@ curlmode=false
 silent=false
 options=
 declare -a urlStack
-urlStackIndex=0
+declare -a optStack
+stackIndex=0
 verbose=false
 
 if [ $# == 0 ]; then
-  urlStack[$urlStackIndex]='google.ca/'
-  ((urlStackIndex++))
+  urlStack[$stackIndex]='google.ca/'
+  ((stackIndex++))
 fi
 
 while [ "${1:0:1}" == "-" ]; do
@@ -72,7 +67,7 @@ while [ "${1:0:1}" == "-" ]; do
         shift ${res[0]}
         case $mode in
           l)
-            urlStack[$urlStackIndex]="google.ca/search?ie=UTF-8&oe=UTF-8&sourceid=navclient&btnI=1&q=""${res[*]:1}";;
+            urlStack[$stackIndex]="google.ca/search?btnI=1&q=""${res[*]:1}";;
           b)
             line=$(egrep -A 4 "\"name\":\ \"${res[*]:1}\"" "$bookmarks" |grep -o "\"url\": \".*\"")
             url=$(echo $line |cut -d '"' -f4)
@@ -80,25 +75,45 @@ while [ "${1:0:1}" == "-" ]; do
               echo Could not find bookmark \'${res[*]:1}\'
               exit 1
             fi
-            urlStack[$urlStackIndex]=$url
+            urlStack[$stackIndex]=$url
           ;;
-          w) urlStack[$urlStackIndex]="${res[*]:1}";;
-          d) urlStack[$urlStackIndex]="google.ca/#q=${res[*]:1}";;
+          w) urlStack[$stackIndex]="${res[*]:1}";;
+          d) urlStack[$stackIndex]="google.ca/#q=${res[*]:1}";;
         esac
-        ((urlStackIndex++))
+        ((stackIndex++))
       ;;
       f)
-        urlStack[$urlStackIndex]="$2"
-        ((urlStackIndex++))
+        urlStack[$stackIndex]="$2"
+        ((stackIndex++))
         shift
         [[ ${#arg} == 2 ]] && shift
       ;;
+
+      D)
+        optStack[$stackIndex]="--disable-web-security ${optStack[$stackIndex]}"
+        shift
+        if [[ ${#arg} == 2 ]]; then
+          shift
+        fi
+      ;;
+      n)
+        optStack[$stackIndex]="--new-window ${optStack[$stackIndex]}"
+        shift
+        if [[ ${#arg} == 2 ]]; then
+          shift
+        fi
+      ;;
+      o)
+        optStack[$stackIndex]="$2 ${optStack[$stackIndex]}"
+        shift
+        if [[ ${#arg} == 2 ]]; then
+          shift
+        fi
+      ;;
+
       c) curlmode=true && [[ ${#arg} == 2 ]] && shift;;
       B) browser="$2" && shift && [[ ${#arg} == 2 ]] && shift;;
       M) bookmarks="$2" && shift && [[ ${#arg} == 2 ]] && shift;;
-      D) options="$options --disable-web-security" && [[ ${#arg} == 2 ]] && shift;;
-      n) options="$options --new-window" && [[ ${#arg} == 2 ]] && shift;;
-      o) options="$options $2" && shift && [[ ${#arg} == 2 ]] && shift;;
       h) echo "$usage" && exit 1;;
       s) silent=true && [[ ${#arg} == 2 ]] && shift;;
       v) verbose=true && [[ ${#arg} == 2 ]] && shift;;
@@ -109,33 +124,25 @@ done
 
 # Still url to parse
 if [ ! -z $1 ]; then
-  urlStack[$urlStackIndex]='google.ca/#q='"$*"
-  ((urlStackIndex++))
+  urlStack[$stackIndex]='google.ca/#q='"$*"
+  ((stackIndex++))
 # Options given but no url
-elif [ "$urlStackIndex" -eq 0 ] && [ ! -z "$options" ]; then
-  ((urlStackIndex++))
+elif [ "$stackIndex" -eq 0 ] && [ ! -z "$optStack[$stackIndex]" ]; then
+  ((stackIndex++))
 fi
 
 if $curlmode; then
   exit 1
   echo "Opening: $url"
-  if ! type html2text &>/dev/null; then
-    for ((i = 0; i < urlStackIndex; i++)); do
-      ${verbose} && echo "curl ${urlStack[$i]}"
-      curl "${urlStack[$i]}"
-    done
-  else
-    for ((i = 0; i < urlStackIndex; i++)); do
-      ${verbose} && echo "curl ${urlStack[$i]}"
-      curl "${urlStack[$i]}" |html2text -width 80 |tee googleScript.txt
-    done
-  fi
+  for ((i = 0; i < stackIndex; i++)); do
+    ${verbose} && echo "curl ${urlStack[$i]}"
+    ${DEBUG} && echo "curl ${urlStack[$i]}" || \
+    curl "${urlStack[$i]}"
+  done
 else
-  for ((i = 0; i < urlStackIndex; i++)); do
-    ${verbose} && echo "$browser $options ${urlStack[$i]}"
-    "$browser" $options "${urlStack[$i]}" &>/dev/null &
+  for ((i = 0; i < stackIndex; i++)); do
+    ${verbose} && echo "$browser ${optStack[$i]} ${urlStack[$i]}"
+    ${DEBUG} && echo "$browser" "${optStack[$i]}" "${urlStack[$i]}" || \
+    "$browser" "${optStack[$i]}" "${urlStack[$i]}" &>$logfile &
   done
 fi
-
-# --window-size=w,h
-# --window-position=x,y
