@@ -57,12 +57,12 @@ expect() {
 #
 # "--new-window google.ca?q=search for gmail"
 # "--option-one --option-two https://webmail.shaw.ca/uwc/auth"
-COMMAND="./google -n search for gmail -oob --option-one --option-two mail"
+COMMAND="./google -ns search for gmail -oob --option-one --option-two mail"
 expect "$COMMAND" "--new-window google.ca?q=search for gmail" "--option-one --option-two https://webmail.shaw.ca/uwc/auth"
 
 # "./google -n search for gmail -oob --option-one --option-two mail"
 #
 # "--new-window google.ca?q=search for gmail"
 # "--option-one --option-two https://webmail.shaw.ca/uwc/auth"
-COMMAND="./google -n 'search for gmail -oob' -oob --option-one --option-two mail"
+COMMAND="./google -ns 'search for gmail -oob' -oob --option-one --option-two mail"
 expect "$COMMAND" "--new-window google.ca?q=search for gmail -oob" "--option-one --option-two https://webmail.shaw.ca/uwc/auth"

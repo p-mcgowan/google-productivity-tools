@@ -7,6 +7,7 @@ mkdir -p ~/tmp/
 touch $logfile
 mode="d"
 DEBUG=true
+homepage='google.ca/'
 
 bookmarks=./Bookmarks
 # set -vx
@@ -14,7 +15,7 @@ bookmarks=./Bookmarks
 usage="\
 Usage: $(basename $0) [OPTIONS] URL
 Browser wrapper script. With no options given, google searches the URL string.
-  -d URL        Google search URL (default)
+  -s URL        Google search URL (implied with single commands)
   -l URL        Google lucky search URL
   -f FILE       Open FILE with google-chrome
   -b BOOKMARK   Search for bookmark instead of URL
@@ -32,19 +33,28 @@ Browser wrapper script. With no options given, google searches the URL string.
                 ~/.config/google-chrome.Default/Bookmarks)
 "
 
-function argsUntilNextOpt {
+argsUntilNextOpt() {
   opts=-[dlfbwcnovDhBM]
   n=0
   str=
   shift
+  # set -x
   while ! [[ "$1" =~ ^$opts ]] && [ ! -z "$1" ]; do
+    # x="$1"
     str=$str" $1"
     shift
     ((n++))
   done
   ((n++))
   echo $n "$str"
+  # set +x
 }
+
+# escapeQuote() {
+#   x="$@"
+#   echo '=> '$x
+#   echo $(eval $x)
+# }
 
 # could do optStack too
 curlmode=false
@@ -54,23 +64,29 @@ declare -a urlStack
 declare -a optStack
 stackIndex=0
 verbose=false
+argind=0
+
+arguments=("$@")
 
 if [ $# == 0 ]; then
-  urlStack[$stackIndex]='google.ca/'
+  urlStack[$stackIndex]="$homepage"
   ((stackIndex++))
 fi
 
-while [ "${1:0:1}" == "-" ]; do
-  arg="$1"
+while [ "${arguments[argind]:0:1}" == "-" ]; do
+  arg="${arguments[argind]}"
+  echo '=> arg='$arg
   for ((i = 1; i < ${#arg}; i++)); do
     case ${arg:$i:1} in
-      l | b | w | d)
+      l | b | w | s)
         mode=${arg:$i:1}
-        res=($(argsUntilNextOpt "$@"))
-        shift ${res[0]}
+        echo ${arguments[@]}
+        res=($(argsUntilNextOpt ${arguments[@]}))
+        argind=$((argind + ${res[0]}))
+        echo $argind
         case $mode in
           l)
-            urlStack[$stackIndex]="google.ca/search?btnI=1&q=""${res[*]:1}";;
+            urlStack[$stackIndex]="${homepage}search?btnI=1&q=""${res[*]:1}";;
           b)
             line=$(egrep -A 4 "\"name\":\ \"${res[*]:1}\"" "$bookmarks" |grep -o "\"url\": \".*\"")
             url=$(echo $line |cut -d '"' -f4)
@@ -81,44 +97,44 @@ while [ "${1:0:1}" == "-" ]; do
             urlStack[$stackIndex]=$url
           ;;
           w) urlStack[$stackIndex]="${res[*]:1}";;
-          d) urlStack[$stackIndex]="google.ca/#q=${res[*]:1}";;
+          s) urlStack[$stackIndex]="${homepage}#q=${res[*]:1}";;
         esac
         ((stackIndex++))
       ;;
       f)
-        urlStack[$stackIndex]="$2"
+        urlStack[$stackIndex]="${arguments[$argind + 1]}"
         ((stackIndex++))
-        shift
-        [[ ${#arg} == 2 ]] && shift
+        ((argind++))
+        [[ ${#arg} == 2 ]] && ((argind++))
       ;;
 
       D)
         optStack[$stackIndex]="--disable-web-security ${optStack[$stackIndex]}"
         if [[ ${#arg} == 2 ]]; then
-          shift
+          ((argind++))
         fi
       ;;
       n)
         optStack[$stackIndex]="--new-window ${optStack[$stackIndex]}"
         if [[ ${#arg} == 2 ]]; then
-          shift
+          ((argind++))
         fi
       ;;
       o)
         # echo "$2 ${optStack[$stackIndex]}"
         optStack[$stackIndex]="$2 ${optStack[$stackIndex]}"
-        shift
+        ((argind++))
         if [[ ${#arg} == 2 ]]; then
-          shift
+          ((argind++))
         fi
       ;;
 
-      c) curlmode=true && [[ ${#arg} == 2 ]] && shift;;
-      B) browser="$2" && shift && [[ ${#arg} == 2 ]] && shift;;
-      M) bookmarks="$2" && shift && [[ ${#arg} == 2 ]] && shift;;
+      c) curlmode=true && [[ ${#arg} == 2 ]] && ((argind++));;
+      B) browser="$2" && ((argind++)) && [[ ${#arg} == 2 ]] && ((argind++));;
+      M) bookmarks="$2" && ((argind++)) && [[ ${#arg} == 2 ]] && ((argind++));;
       h) echo "$usage" && exit 1;;
-      s) silent=true && [[ ${#arg} == 2 ]] && shift;;
-      v) verbose=true && [[ ${#arg} == 2 ]] && shift;;
+      # s) silent=true && [[ ${#arg} == 2 ]] && ((argind++));;
+      v) verbose=true && [[ ${#arg} == 2 ]] && ((argind++));;
       *) echo "Unknow option \`$1'. Try $(basename $0) -h for more info" && exit 1;;
     esac
   done
@@ -126,7 +142,7 @@ done
 
 # Still url to parse
 if [ ! -z $1 ]; then
-  urlStack[$stackIndex]='google.ca/#q='"$*"
+  urlStack[$stackIndex]='${homepage}#q='"$*"
   ((stackIndex++))
 # Options given but no url
 elif [ "$stackIndex" -eq 0 ] && [ ! -z "$optStack[$stackIndex]" ]; then
