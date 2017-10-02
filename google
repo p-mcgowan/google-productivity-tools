@@ -6,7 +6,7 @@ logfile=~/tmp/google-script.log
 mkdir -p ~/tmp/
 touch $logfile
 mode="d"
-DEBUG=true
+debug=false
 homepage='google.ca'
 
 usage="\
@@ -21,19 +21,14 @@ Browser wrapper script. With no options given, google searches the URL string.
   -o OPTIONS    Pass in OPTIONS to browser. Quote for multiple arguments
   -B BROWSER    Set browser to BROWSER (default google-chrome)
   -M BOOKMARKS  Use file BOOKMARKS to search for bookmarks (default:
-                ~/.config/google-chrome.Default/Bookmarks). Note: format expects
+                ~/.config/google-chrome/Default/Bookmarks). Note: format expects
                 google-style bookmarks, so this option may not work for other
                 browsers.
   -c            Curl the url instead.
   -v            Print the full url to console before opening.
-  -d            Print the full url to console instea of opening.
+  -d            Print the full url to console instead of opening.
   -D            Run with '--disable-web-security' flag (development).
   -h            Show this menu"
-rm -f debug.log
-log() {
-  return
-  echo '  => '$@ >&2
-}
 
 argsUntilNextOpt() {
   opts=-[slfbwcnovDhBM]
@@ -53,12 +48,10 @@ argsUntilNextOpt() {
 }
 
 curlmode=false
-silent=false
-options=
+verbose=false
 declare -a urlStack
 declare -a optStack
 stackIndex=0
-verbose=false
 
 if [ $# == 0 ]; then
   urlStack[$stackIndex]="$homepage"
@@ -124,13 +117,17 @@ while [ "${1:0:1}" == "-" ]; do
       ;;
       h)
         echo "$usage"
-        exit 1
+        exit 0
       ;;
       v)
-        verbose=true
+        ! $debug && verbose=true
         [[ ${#arg} == 2 ]] && shift
       ;;
-      d) debug=true;;
+      d)
+        debug=true
+        verbose=false
+        [[ ${#arg} == 2 ]] && shift
+      ;;
       *) echo "Unknow option \`$1'. Try $(basename $0) -h for more info" && exit 1;;
     esac
   done
@@ -146,16 +143,15 @@ elif [ "$stackIndex" -eq 0 ] && [ ! -z "$optStack[$stackIndex]" ]; then
 fi
 
 if $curlmode; then
-  # echo "Opening: $url"
   for ((i = 0; i < stackIndex; i++)); do
-    ${verbose} && echo "curl${optStack[$i]} ${urlStack[$i]}"
-    ${DEBUG} && echo "curl${optStack[$i]} ${urlStack[$i]}" || \
-    curl"${optStack[$i]}" "${urlStack[$i]}"
+    ${verbose} && echo curl"${optStack[$i]# } ${urlStack[$i]}"
+    ${debug} && echo curl"${optStack[$i]# } ${urlStack[$i]}" || \
+    curl"${optStack[$i]# }" "${urlStack[$i]}"
   done
 else
   for ((i = 0; i < stackIndex; i++)); do
-    ${verbose} && echo "$browser${optStack[$i]} ${urlStack[$i]}"
-    ${DEBUG} && echo "$browser""${optStack[$i]}" "${urlStack[$i]}" || \
-    "$browser""${optStack[$i]}" "${urlStack[$i]}" &>$logfile &
+    ${verbose} && echo $browser "${optStack[$i]# } ${urlStack[$i]}"
+    ${debug} && echo $browser "${optStack[$i]# } ${urlStack[$i]}" || \
+    $browser "${optStack[$i]# } ${urlStack[$i]}" &>$logfile &
   done
 fi
