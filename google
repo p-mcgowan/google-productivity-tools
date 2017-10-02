@@ -7,8 +7,11 @@ mkdir -p ~/tmp/
 touch $logfile
 mode="d"
 DEBUG=true
-# set -x
 #mobile
+exec 5>> debug_output.txt
+BASH_XTRACEFD="5"
+PS4='$LINENO: '
+set -x
 bookmarks=./Bookmarks
 usage="\
 Usage: $(basename $0) [OPTIONS] URL
