@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 
 browser="google-chrome"
 bookmarks=~/.config/google-chrome/Default/Bookmarks
@@ -9,39 +9,31 @@ mode="d"
 DEBUG=true
 homepage='google.ca'
 
-bookmarks=./Bookmarks
-# set -vx
-
 usage="\
 Usage: $(basename $0) [OPTIONS] URL
 Browser wrapper script. With no options given, google searches the URL string.
-  -s URL        Google search URL (implied with single commands)
+  -s URL        Google search URL (default when only 1 url specified)
   -l URL        Google lucky search URL
   -f FILE       Open FILE with google-chrome
   -b BOOKMARK   Search for bookmark instead of URL
   -w URL        Use URL as address instead of google searching
-  -c            Curl the url instead
   -n            Start in a new window
-  -o OPTIONS    Pass in OPTIONS to google-chrome. Quote for multiple arguments
-  -v            Print the full url to console before opening
-  -D            Run with '--disable-web-security' flag (development)
-  -h            Show this menu
-
-  deprecated:
+  -o OPTIONS    Pass in OPTIONS to browser. Quote for multiple arguments
   -B BROWSER    Set browser to BROWSER (default google-chrome)
   -M BOOKMARKS  Use file BOOKMARKS to search for bookmarks (default:
-                ~/.config/google-chrome.Default/Bookmarks)
-"
+                ~/.config/google-chrome.Default/Bookmarks). Note: format expects
+                google-style bookmarks, so this option may not work for other
+                browsers.
+  -c            Curl the url instead.
+  -v            Print the full url to console before opening.
+  -d            Print the full url to console instea of opening.
+  -D            Run with '--disable-web-security' flag (development).
+  -h            Show this menu"
 rm -f debug.log
 log() {
   return
   echo '  => '$@ >&2
 }
-
-# for i in "$@"; do
-#   echo $i
-# done
-# exit
 
 argsUntilNextOpt() {
   opts=-[slfbwcnovDhBM]
@@ -80,7 +72,6 @@ while [ "${1:0:1}" == "-" ]; do
       l | b | w | s)
         mode=${arg:$i:1}
         res=($(argsUntilNextOpt "$@"))
-        echo ${res[@]}
         shift ${res[0]}
         str="${res[@]:1}"
 
@@ -119,7 +110,6 @@ while [ "${1:0:1}" == "-" ]; do
         optStack[$stackIndex]="${optStack[$stackIndex]} $2"
         shift && [[ ${#arg} == 2 ]] && shift
       ;;
-
       c)
         curlmode=true
         [[ ${#arg} == 2 ]] && shift
@@ -140,13 +130,9 @@ while [ "${1:0:1}" == "-" ]; do
         verbose=true
         [[ ${#arg} == 2 ]] && shift
       ;;
+      d) debug=true;;
       *) echo "Unknow option \`$1'. Try $(basename $0) -h for more info" && exit 1;;
     esac
-    if [ ! -z "$*" ]; then
-      res=($(argsUntilNextOpt "$@"))
-      shift ${res[0]}
-      ((stackIndex++))
-    fi
   done
 done
 
@@ -160,17 +146,16 @@ elif [ "$stackIndex" -eq 0 ] && [ ! -z "$optStack[$stackIndex]" ]; then
 fi
 
 if $curlmode; then
-  exit 1
-  echo "Opening: $url"
+  # echo "Opening: $url"
   for ((i = 0; i < stackIndex; i++)); do
-    ${verbose} && echo "curl ${urlStack[$i]}"
-    ${DEBUG} && echo "curl ${urlStack[$i]}" || \
-    curl "${urlStack[$i]}"
+    ${verbose} && echo "curl${optStack[$i]} ${urlStack[$i]}"
+    ${DEBUG} && echo "curl${optStack[$i]} ${urlStack[$i]}" || \
+    curl"${optStack[$i]}" "${urlStack[$i]}"
   done
 else
   for ((i = 0; i < stackIndex; i++)); do
-    ${verbose} && echo "$browser ${optStack[$i]} ${urlStack[$i]}"
-    ${DEBUG} && echo "$browser" "${optStack[$i]}" "${urlStack[$i]}" || \
-    "$browser" "${optStack[$i]}" "${urlStack[$i]}" &>$logfile &
+    ${verbose} && echo "$browser${optStack[$i]} ${urlStack[$i]}"
+    ${DEBUG} && echo "$browser""${optStack[$i]}" "${urlStack[$i]}" || \
+    "$browser""${optStack[$i]}" "${urlStack[$i]}" &>$logfile &
   done
 fi
