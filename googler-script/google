@@ -10,10 +10,10 @@ debug=false
 homepage='google.ca'
 
 usage="\
-Usage: $(basename $0) [OPTIONS] URL
+Usage: $(basename $0) [OPTIONS [ARGS]] [URL]
 Browser wrapper script. With no options given, google searches the URL string.
   -s URL        Google search URL (default when only 1 url specified)
-  -l URL        Google lucky search URL
+  -l URL        Google lucky search URL (straight to first search result)
   -f FILE       Open FILE with google-chrome
   -b BOOKMARK   Search for bookmark instead of URL
   -w URL        Use URL as address instead of google searching
