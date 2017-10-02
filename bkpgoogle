@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 
 browser="google-chrome"
 bookmarks=~/.config/google-chrome/Default/Bookmarks
@@ -8,7 +8,6 @@ touch $logfile
 mode="d"
 DEBUG=true
 
-bookmarks=./Bookmarks
 # set -vx
 
 usage="\
@@ -32,12 +31,12 @@ Browser wrapper script. With no options given, google searches the URL string.
                 ~/.config/google-chrome.Default/Bookmarks)
 "
 
-function argsUntilNextOpt {
+function argsUntilNextValidOpt {
   opts=-[dlfbwcnovDhBM]
   n=0
   str=
   shift
-  while ! [[ "$1" =~ ^$opts ]] && [ ! -z "$1" ]; do
+  while ! [[ $1 =~ $opts ]] && [ ! -z $1 ]; do
     str=$str" $1"
     shift
     ((n++))
@@ -66,7 +65,7 @@ while [ "${1:0:1}" == "-" ]; do
     case ${arg:$i:1} in
       l | b | w | d)
         mode=${arg:$i:1}
-        res=($(argsUntilNextOpt "$@"))
+        res=($(argsUntilNextValidOpt $*))
         shift ${res[0]}
         case $mode in
           l)
@@ -105,9 +104,7 @@ while [ "${1:0:1}" == "-" ]; do
         fi
       ;;
       o)
-        # echo "$2 ${optStack[$stackIndex]}"
         optStack[$stackIndex]="$2 ${optStack[$stackIndex]}"
-        shift
         if [[ ${#arg} == 2 ]]; then
           shift
         fi
