@@ -176,8 +176,8 @@ google -B vivaldi -nb gmail -s this is a test
 ```  
 **Output:**  
 ```
-vivaldi  --new-window https://mail.google.com/mail/u/0/
-vivaldi  google.ca/search?q=this is a test
+vivaldi --new-window https://mail.google.com/mail/u/0/
+vivaldi google.ca/search?q=this is a test
 ```  
 
 *Note here* The browser option applies once to the entire command - you cannot run 2 browsers from one command, you must call the script twice.  
@@ -200,7 +200,7 @@ google -c -o "-XPOST -H 'Content-Type: application/json' -d '{\"username\":\"pat
 ```  
 **Output:**  
 ```
-curl  -XPOST -H 'Content-Type: application/json' -d '{"username":"pat"}' https://myapp.com/api/
+curl -XPOST -H 'Content-Type: application/json' -d '{"username":"pat"}' https://myapp.com/api/
 ```  
 At this point it makes more sense to use curl on it's own, but you get the point.  
 

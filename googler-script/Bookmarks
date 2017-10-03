@@ -1,0 +1,19 @@
+"name": "gmail",
+"sync_transaction_version": "2002",
+"type": "url",
+"url": "https://mail.google.com/mail/u/0/"
+
+"name": "thestack",
+"sync_transaction_version": "2012",
+"type": "url",
+"url": "https://stackoverflow.com/"
+
+"name": "devblog",
+"sync_transaction_version": "1985",
+"type": "url",
+"url": "https://dev.to/"
+
+"name": "myapi",
+"sync_transaction_version": "2002",
+"type": "url",
+"url": "https://myapp.com/api/"

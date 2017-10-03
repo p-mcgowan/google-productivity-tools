@@ -43,7 +43,7 @@ argsUntilNextOpt() {
   echo "$n $str"
 }
 
-debug=true
+debug=false
 mode="d"
 plusInsteadOfSpaces=false
 curlmode=false
@@ -92,7 +92,6 @@ while [ "${1:0:1}" == "-" ]; do
         ((stackIndex++))
       ;;
       f)
-      log "passing $1 to -f"
         urlStack[$stackIndex]="$1"
         ((stackIndex++))
         shift
@@ -116,6 +115,7 @@ while [ "${1:0:1}" == "-" ]; do
       ;;
       M)
         bookmarks="$1"
+        shift
       ;;
       h)
         exit 0
