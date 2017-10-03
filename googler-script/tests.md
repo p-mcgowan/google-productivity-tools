@@ -1,60 +1,3 @@
-# Google-chrome wrapper script  
-
-A bash wrapper for browser searching from the command line.  
-
-## Features:  
- * **Simple to use:** For basic usage, it's as simple as `google cat videos`.
- * **Powerful:** Use it for advanced chrome features, development, and tie it into those API curls.  
- * **Flexible:** Wrap your favourite links in aliases, throw it in a "starting the workday script", or add a shortcut key to it for rapid Redditing.
-
-## Usage:  
-
-`google [OPTIONS [ARGS]] [URL]...`  
-
-| Options         | Description                                                   |
-|              ---|---                                                            |
-| -s URL          | Google search URL (default when only 1 url specified)         |
-| -l URL          | Google lucky search URL (straight to first search result)     |
-| -f FILE         | Open FILE with google-chrome                                  |
-| -b BOOKMARK     | Search for bookmark instead of URL                            |
-| -w URL          | Use URL as address instead of google searching                |
-| -n              | Start in a new window                                         |
-| -o OPTIONS      | Pass in OPTIONS to browser. Quote for multiple arguments      |
-| -B BROWSER      | Set browser to BROWSER (default google-chrome)                |
-| -M BOOKMARKS    | Use file BOOKMARKS to search for bookmarks (default:<br> ~/.config/google-chrome/Default/Bookmarks). Note: format<br>expects google-style bookmarks, so this option may not work<br>for other browsers.    |
-| -c              | Curl the url instead.                                         |
-| -P              | Use plus symbol (+) instead of spaces in URLS (compatibility) |
-| -v              | Print the full url to console before opening.                 |
-| -d              | Print the full url to console instea of opening.              |
-| -D              | Run with '--disable-web-security' flag (development).         |
-| -h              | Show this menu                                                |
-
-Note: OPTIONS are comsumed as soon as a mode flag (-s, -l,-b) is parsed, meaning 
-options must preceed modes.
-For example:
-```
-google -nl test -s this is a search
-```  
-executes:
-```
-google-chrome --new-window google.ca/search?btnI=1&q=test
-google-chrome google.ca/search?q=this is a search
-```  
-
-whereas:
-```
-google -ln test -s this is a search
-```  
-executes:
-```
-google-chrome google.ca/search?btnI=1&q=test
-google-chrome --new-window google.ca/search?q=this is a search
-```  
-
-
-
-## Examples
-
 **Input:**  
 ```
 google let me google that for you
@@ -67,11 +10,11 @@ google-chrome google.ca/search?q=let me google that for you
 
 **Input:**  
 ```
-google -l youtube
+google -l speedtest
 ```  
 **Output:**  
 ```
-google-chrome google.ca/search?btnI=1&q=youtube
+google-chrome google.ca/search?btnI=1&q=speedtest
 ```  
 
 
@@ -120,7 +63,6 @@ google -oob --option-one --option-two thestack -nb gmail
 google-chrome --option-one --option-two https://stackoverflow.com/
 google-chrome --new-window https://mail.google.com/mail/u/0/
 ```  
-Note that this is equivalent to `google -ob '--option-one --option-two' thestack -nb gmail`  
 
 
 **Input:**  

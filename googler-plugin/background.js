@@ -1,7 +1,7 @@
-var suggestions = [];
-
 // Hash for suggestion data
-var Data = { suggestions: {}, default: {} };
+let Data = { suggestions: {}, default: {} };
+// Suggestion array
+let suggestions = [];
 
 if (!String.prototype.encodeHTML) {
     String.prototype.encodeHTML = function() {

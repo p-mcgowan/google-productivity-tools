@@ -1,9 +1,11 @@
 <!doctype html>
-<!--
- This page is shown when the extension button is clicked, because the
- "browser_action" field in manifest.json contains the "default_popup" key with
- value "popup.html".
- -->
+<!-- <html>
+  <body style="width: 300px">
+    Open <a href="http://stackoverflow.com" target="_blank">this page</a> and then
+    <button id="clickme">click me</button>
+    <script type="text/javascript" src="popup.js"></script>
+  </body>
+</html> -->
 <html>
   <head>
     <title>Getting Started Extension's Popup</title>
@@ -17,23 +19,22 @@
         width: 100%;
       }
 
-      #popupmodal-input {
+      #popupmodalInput {
 
       }
 
-      #popupmodal-results {
+      #popupmodalResults {
 
       }
     </style>
-    <!-- <script src="popup.js"></script> -->
-    <script src="popup.js"></script>
   </head>
   <body>
-    <!-- <div id="popupmodal">
-        <input id="popupmodal-input" type="text" placeholder="Type stuff"
-            onkeyup="debounce(searchFunction, 100, false)(0)" />
-        <div id="popupmodal-results"></div>
-    </div> -->
+    <div id="popupmodal">
+        <input id="modalInput" type="text" placeholder="Type stuff" />
+            <!-- onkeyup="debounce(searchFunction, 100, false)(0)" /> -->
+        <div id="modalResults"></div>
+        <script type="text/javascript" src="popup.js"></script>
+    </div>
   </body>
 </html>
 
