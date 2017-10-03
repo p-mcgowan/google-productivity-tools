@@ -16,7 +16,7 @@ A bash wrapper for browser searching from the command line.
 | -s URL          | Google search URL (default when only 1 url specified)         |
 | -l URL          | Google lucky search URL (straight to first search result)     |
 | -f FILE         | Open FILE with google-chrome                                  |
-| -b BOOKMARK     | Search for bookmark instead of URL                            |
+| -b BOOKMARK     | Search for BOOKMARK instead of URL (accepts regex)            |
 | -w URL          | Use URL as address instead of google searching                |
 | -n              | Start in a new window                                         |
 | -o OPTIONS      | Pass in OPTIONS to browser. Quote for multiple arguments      |

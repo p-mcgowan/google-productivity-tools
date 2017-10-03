@@ -56,7 +56,7 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
         // search open tabs
         promises.push(new Promise((resolve, reject) => {
             if (typeof flag === 'undefined' || flag === 't') {
-                chrome.tabs.query({ title: text }, (tabs) => {
+                chrome.tabs.query({ title: text }, tabs => {
                     tabs.forEach((tab, tabIndex) => {
                         let suggestion = {
                             content     : `switch to tab: ${tab.title.encodeHTML()}`,
@@ -83,7 +83,7 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
         promises.push(new Promise((resolve, reject) => {
             if (typeof flag === 'undefined' || flag === 'b') {
                 // Search bookmark content
-                chrome.bookmarks.search(text, (bookmarks) => {
+                chrome.bookmarks.search(text, bookmarks => {
                     bookmarks.forEach((bookmark, bookmarkIndex) => {
                         // Don't push folders
                         if (bookmark.url) {
@@ -111,7 +111,7 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
         // search history
         promises.push(new Promise((resolve, reject) => {
             if (typeof flag === 'undefined' || flag === 'h') {
-                chrome.history.search({ text: text }, (history) => {
+                chrome.history.search({ text: text }, history => {
                     history.forEach((page, index) => {
                         let suggestion = {
                             content     : `history: ${page.title.encodeHTML()}`,
@@ -133,7 +133,7 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
             }
         }));
 
-        Promise.all(promises).then((v) => {
+        Promise.all(promises).then(v => {
             try {
                 if (suggestions.length) {
                     chrome.omnibox.setDefaultSuggestion({ description: suggestions[0].description });
@@ -144,12 +144,12 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
             } catch (e) {
                 console.trace.bind(window.console)(e, suggestions);
             }
-        }).catch((e) => { console.trace.bind(window.console)(e); });
+        }).catch(e => { console.trace.bind(window.console)(e); });
     }
 });
 
 
-chrome.omnibox.onInputEntered.addListener((content) => {
+chrome.omnibox.onInputEntered.addListener(content => {
     // If the suggestion is undefined, it means the default suggestion was entered
     let suggestion = Data.suggestions[content];
     if (typeof suggestion === 'undefined') {

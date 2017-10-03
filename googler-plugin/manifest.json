@@ -4,17 +4,21 @@
   "version"          : "1.0",
   "description"      : "Efficientize your Googling",
   "icons": {
-    "16": "icon.png"
+    "16": "googler.png"
   },
 
   "browser_action": {
-    "default_icon"  : "icon.png",
-    "default_popup" : "popup.html"
+    "default_icon"  : "googler.png",
+    "default_popup" : "js/popup/popup.html"
   },
 
   "background": {
-    "scripts"    : ["background.js"],
+    "scripts"    : ["js/background/background.js"],
     "persistent" : false
+  },
+  "options_ui": {
+    "page": "js/options/options.html",
+    "chrome_style": true
   },
 
   "omnibox": {

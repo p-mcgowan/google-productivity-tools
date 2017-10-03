@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="popup.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script type="text/javascript" src="popup.js"></script>
+        <script type="text/javascript" src="../lib/Suggester.js"></script>
+        <script type="text/javascript" src="../lib/Debounce.js"></script>
+        <title>Getting Started Extension's Popup</title>
+        <style>
+            html {
+                width: 785px;
+            }
+
+            body {
+                margin: 0;
+                padding: 8px;
+                max-width: 770px;
+            }
+
+            #popupmodal {
+                width: 100%;
+                max-width: 800px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .input-container {
+                display: flex;
+                justify-content: flex-end;
+                height: 50px;
+                align-items: center;
+            }
+
+            .input-container i {
+                color: rgba(0, 0, 0, 0.5);
+            }
+
+            #modalInput {
+                margin-right: 16px;
+                display: flex;
+                flex: 1;
+            }
+
+            #modalResults {
+                display: flex;
+                flex-direction: column;
+                margin-top: 16px;
+            }
+
+            .selection {
+                white-space: nowrap;
+                padding: 8px;
+                background-color: rgba(0, 0, 0, 0.1);
+                margin: 2px 0;
+                border-radius: 4px;
+            }
+
+            .selection[selected] {
+                background-color: #fbbe72;
+            }
+
+            /*.selection:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }*/
+        </style>
+    </head>
+    <body>
+        <div id="popupmodal">
+            <div class="input-container">
+                <input id="modalInput" type="text" placeholder="Enter search query" />
+                <i id="settingsButton" class="material-icons icon-button">settings</i></a>
+            </div>
+            <div id="modalResults"></div>
+        </div>
+        <template id="selectTemplate">
+            <div class="selection"></div>
+        </template>
+    </body>
+</html>
