@@ -1,13 +1,16 @@
 let onSelect = (index, ctrl) => {
-    console.log(index, suggestionResults);
     let suggestion = suggestionResults[index];
 
     switch (suggestion.type) {
         case 'bookmark':
-            // Update the current tab's url
-            chrome.tabs.getSelected(null, tab => {
-                chrome.tabs.update(tab.id, { url: suggestion.url });
-            });
+            // Update the current tab's url, or if ctrl-enter pressed, a new tab
+            if (!ctrl) {
+                chrome.tabs.getSelected(null, tab => {
+                    chrome.tabs.update(tab.id, { url: suggestion.url });
+                });
+            } else {
+                chrome.tabs.create({ url: suggestion.url, active: false });
+            }
         break;
         case 'tab':
             // Change to the target tab (and window if applicable)
@@ -17,16 +20,32 @@ let onSelect = (index, ctrl) => {
         break;
         case 'history':
             // Update the current tab's url
-            chrome.tabs.getSelected(null, tab => {
-                chrome.tabs.update(tab.id, { url: suggestion.url });
-            });
+            if (!ctrl) {
+                chrome.tabs.getSelected(null, tab => {
+                    chrome.tabs.update(tab.id, { url: suggestion.url });
+                });
+            } else {
+                chrome.tabs.create({ url: suggestion.url, active: false });
+            }
         break;
         case 'lucky':
             // Update the current tab's url
-            chrome.tabs.getSelected(null, tab => {
-                chrome.tabs.update(tab.id, { url: suggestion.url });
-            });
+            if (!ctrl) {
+                chrome.tabs.getSelected(null, tab => {
+                    chrome.tabs.update(tab.id, { url: suggestion.url });
+                });
+            } else {
+                chrome.tabs.create({ url: suggestion.url, active: false });
+            }
         break;
+        default:
+            // probably some kind of error...
+            console.log({ index: index, sugs: suggestionResults });
+            return;
+    }
+
+    if (!ctrl) {
+        window.close();
     }
 }
 
@@ -36,7 +55,7 @@ let doSuggestions = (e, text) => {
     suggestionResults = [];
     Suggester.getSuggestions(text).then(res => {
         suggestionResults = res;
-        console.log(text, res);
+        console.log({ text: text, res: res });
         let template = document.getElementById('selectTemplate');
         let results = document.getElementById('modalResults');
         results.innerHTML = '';
@@ -44,24 +63,25 @@ let doSuggestions = (e, text) => {
         selectIndex = 0;
 
         let count = 0;
-        for (let i in res) {
+        res.forEach(r => {
             let el = template.content.cloneNode(true).firstElementChild;
-            el.innerHTML = i;
-            el.onclick = () => { onSelect(res[i]); };
+            el.innerHTML = r.description;
+            // el.onsubmit = () => { onSelect(r); };
+            el.onclick = () => { onSelect(selectIndex); };
             if (!count) {
                 el.setAttribute('selected', '');
-                first = false;
             }
             el.setAttribute('number', count);
-            el.onmouseenter = (e) => {
+            el.onmouseover = (e) => {
                 oldIndex = selectIndex;
                 selectIndex = e.target.getAttribute('number');
                 updateActive();
             };
             results.appendChild(el);
             count++;
-        }
+        });
 
+        updateActive()
     }).catch(e => {
         console.trace.bind(window.console)(e);
     });
@@ -71,11 +91,11 @@ let selectIndex = 0, oldIndex = 0;
 
 
 let updateActive = () => {
-    let selections = document.getElementsByClassName('selection');
-    if (selections.length) {
+    let suggestionElements = document.getElementsByClassName('selection');
+    if (suggestionElements.length) {
         if (oldIndex !== selectIndex) {
-            selections[(oldIndex % selections.length)].removeAttribute('selected');
-            selections[(selectIndex % selections.length)].setAttribute('selected', '');
+            suggestionElements[(oldIndex % suggestionElements.length)].removeAttribute('selected');
+            suggestionElements[(selectIndex % suggestionElements.length)].setAttribute('selected', '');
         }
     }
 }

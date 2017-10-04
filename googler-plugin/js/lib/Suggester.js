@@ -2,7 +2,7 @@ class Suggester {
 
     static getSuggestions(text) {
         // Suggestion array
-        let suggestions = {};
+        let suggestions = [];
 
         if (!String.prototype.encodeHTML) {
             String.prototype.encodeHTML = function() {
@@ -35,11 +35,12 @@ class Suggester {
                     // lucky search a string
                     if (flag === 'l') {
                         let index = `${text.encodeHTML()} => lucky search`;
-                        suggestions[index] = {
-                            content : `lucky search: ${text.encodeHTML()}`,
-                            type    : 'lucky',
-                            url     : `http://google.ca/search?btnI=1&q=${text}`
-                        };
+                        suggestions.push({
+                            description : index,
+                            content     : `lucky search: ${text.encodeHTML()}`,
+                            type        : 'lucky',
+                            url         : `http://google.ca/search?btnI=1&q=${text}`
+                        });
 
                         resolve('using lucky');
                     } else {
@@ -55,12 +56,13 @@ class Suggester {
                             // Add matches to suggestions
                             tabs.forEach(tab => {
                                 let index = `${tab.title.encodeHTML()} => tab`
-                                suggestions[index] = {
-                                    content  : `switch to tab: ${tab.title.encodeHTML()}`,
-                                    type     : 'tab',
-                                    windowId : tab.windowId,
-                                    tabId    : tab.id
-                                };
+                                suggestions.push({
+                                    description : index,
+                                    content     : `switch to tab: ${tab.title.encodeHTML()}`,
+                                    type        : 'tab',
+                                    windowId    : tab.windowId,
+                                    tabId       : tab.id
+                                });
                             });
 
                             resolve('using tabs');
@@ -80,11 +82,12 @@ class Suggester {
                                 // Don't push folders
                                 if (bookmark.url) {
                                     let index = `${bookmark.title.encodeHTML()} => bookmark`;
-                                    suggestions[index] = {
-                                        content : bookmark.url.encodeHTML(),
-                                        type    : 'bookmark',
-                                        url     : bookmark.url
-                                    };
+                                    suggestions.push({
+                                        description : index,
+                                        content     : bookmark.url.encodeHTML(),
+                                        type        : 'bookmark',
+                                        url         : bookmark.url
+                                    });
                                 }
                             });
 
@@ -103,11 +106,12 @@ class Suggester {
                             // Add matches to suggestions
                             history.forEach(page => {
                                 let index = `${page.title.encodeHTML()} => history`;
-                                suggestions[index] = {
-                                    content : `history: ${page.title.encodeHTML()}`,
-                                    type    : 'history',
-                                    url     : page.url
-                                };
+                                suggestions.push({
+                                    description : index,
+                                    content     : `history: ${page.title.encodeHTML()}`,
+                                    type        : 'history',
+                                    url         : page.url
+                                });
                             });
 
                             resolve('using history');
