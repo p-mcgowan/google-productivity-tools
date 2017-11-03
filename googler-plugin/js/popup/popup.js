@@ -1,94 +1,98 @@
 let onSelect = (index, ctrl) => {
-    let suggestion = suggestionResults[index];
+    loadingSuggestions.then(() => {
+        let suggestion = suggestionResults[index];
 
-    switch (suggestion.type) {
-        case 'bookmark':
-            // Update the current tab's url, or if ctrl-enter pressed, a new tab
-            if (!ctrl) {
-                chrome.tabs.getSelected(null, tab => {
-                    chrome.tabs.update(tab.id, { url: suggestion.url });
+        switch (suggestion.type) {
+            case 'bookmark':
+                // Update the current tab's url, or if ctrl-enter pressed, a new tab
+                if (!ctrl) {
+                    chrome.tabs.getSelected(null, tab => {
+                        chrome.tabs.update(tab.id, { url: suggestion.url });
+                        window.close();
+                    });
+                } else {
+                    chrome.tabs.create({ url: suggestion.url, active: false });
+                }
+            break;
+            case 'tab':
+                // Change to the target tab (and window if applicable)
+                chrome.windows.update(suggestion.windowId, { focused: true }, w => {
+                    chrome.tabs.update(suggestion.tabId, { active: true });
+                    window.close();
                 });
-            } else {
-                chrome.tabs.create({ url: suggestion.url, active: false });
-            }
-        break;
-        case 'tab':
-            // Change to the target tab (and window if applicable)
-            chrome.windows.update(suggestion.windowId, { focused: true }, w => {
-                chrome.tabs.update(suggestion.tabId, { active: true });
-            });
-        break;
-        case 'history':
-            // Update the current tab's url
-            if (!ctrl) {
-                chrome.tabs.getSelected(null, tab => {
-                    chrome.tabs.update(tab.id, { url: suggestion.url });
-                });
-            } else {
-                chrome.tabs.create({ url: suggestion.url, active: false });
-            }
-        break;
-        case 'lucky':
-            // Update the current tab's url
-            if (!ctrl) {
-                chrome.tabs.getSelected(null, tab => {
-                    chrome.tabs.update(tab.id, { url: suggestion.url });
-                });
-            } else {
-                chrome.tabs.create({ url: suggestion.url, active: false });
-            }
-        break;
-        default:
-            // probably some kind of error...
-            console.log({ index: index, sugs: suggestionResults });
-            return;
-    }
-
-    if (!ctrl) {
-        window.close();
-    }
+            break;
+            case 'history':
+                // Update the current tab's url
+                if (!ctrl) {
+                    chrome.tabs.getSelected(null, tab => {
+                        chrome.tabs.update(tab.id, { url: suggestion.url });
+                        window.close();
+                    });
+                } else {
+                    chrome.tabs.create({ url: suggestion.url, active: false });
+                }
+            break;
+            case 'lucky':
+                // Update the current tab's url
+                if (!ctrl) {
+                    chrome.tabs.getSelected(null, tab => {
+                        chrome.tabs.update(tab.id, { url: suggestion.url });
+                        window.close();
+                    });
+                } else {
+                    chrome.tabs.create({ url: suggestion.url, active: false });
+                }
+            break;
+            default:
+                // probably some kind of error...
+                console.log({ index: index, sugs: suggestionResults });
+                return;
+        }
+    });
 }
 
 let suggestionResults = [];
 
 let doSuggestions = (e, text) => {
-    suggestionResults = [];
-    Suggester.getSuggestions(text).then(res => {
-        suggestionResults = res;
-        console.log({ text: text, res: res });
-        let template = document.getElementById('selectTemplate');
-        let results = document.getElementById('modalResults');
-        results.innerHTML = '';
+    return new Promise((resolve, reject) =>{
+        suggestionResults = [];
+        Suggester.getSuggestions(text).then(res => {
+            suggestionResults = res;
+            console.log({ text: text, res: res });
+            let template = document.getElementById('selectTemplate');
+            let results = document.getElementById('modalResults');
+            results.innerHTML = '';
 
-        selectIndex = 0;
+            selectIndex = 0;
 
-        let count = 0;
-        res.forEach(r => {
-            let el = template.content.cloneNode(true).firstElementChild;
-            el.innerHTML = r.description;
-            // el.onsubmit = () => { onSelect(r); };
-            el.onclick = () => { onSelect(selectIndex); };
-            if (!count) {
-                el.setAttribute('selected', '');
-            }
-            el.setAttribute('number', count);
-            el.onmouseover = (e) => {
-                oldIndex = selectIndex;
-                selectIndex = e.target.getAttribute('number');
-                updateActive();
-            };
-            results.appendChild(el);
-            count++;
+            let count = 0;
+            res.forEach(r => {
+                let el = template.content.cloneNode(true).firstElementChild;
+                el.innerHTML = r.description;
+                el.onclick = () => { onSelect(selectIndex); };
+                if (!count) {
+                    el.setAttribute('selected', '');
+                }
+                el.setAttribute('number', count);
+                el.onmouseover = (e) => {
+                    oldIndex = selectIndex;
+                    selectIndex = e.target.getAttribute('number');
+                    updateActive();
+                };
+                results.appendChild(el);
+                count++;
+            });
+
+            updateActive();
+            resolve();
+        }).catch(e => {
+            console.trace.bind(window.console)(e);
+            reject(e);
         });
-
-        updateActive()
-    }).catch(e => {
-        console.trace.bind(window.console)(e);
-    });
+    })
 }
 
-let selectIndex = 0, oldIndex = 0;
-
+let selectIndex = 0, oldIndex = 0, loadingSuggestions;
 
 let updateActive = () => {
     let suggestionElements = document.getElementsByClassName('selection');
@@ -132,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let input = document.getElementById('modalInput');
     input.focus();
     input.oninput = new Debounce().run(event => {
-        doSuggestions(event, event.target.value);
+        loadingSuggestions = doSuggestions(event, event.target.value);
     }, 150);
 
 });

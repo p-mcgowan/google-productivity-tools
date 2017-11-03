@@ -142,9 +142,9 @@ chrome.omnibox.onInputChanged.addListener((text, suggest) => {
                     suggest(suggestions);
                 }
             } catch (e) {
-                console.trace.bind(window.console)(e, suggestions);
+                console.trace(e, suggestions);
             }
-        }).catch(e => { console.trace.bind(window.console)(e); });
+        }).catch(e => { console.trace(e); });
     }
 });
 
