@@ -12,7 +12,7 @@ Browser wrapper script. With no options given, google searches the URL string.
   -s URL        Google search URL (default when only 1 url specified)
   -l URL        Google lucky search URL
   -f FILE       Open FILE with google-chrome
-  -b BOOKMARK   Search for BOOKMARK instead of URL (accepts regex)
+  -b BOOKMARK   Search for bookmark instead of URL
   -w URL        Use URL as address instead of google searching
   -n            Start in a new window
   -o OPTIONS    Pass in OPTIONS to browser. Quote for multiple arguments
@@ -118,6 +118,7 @@ while [ "${1:0:1}" == "-" ]; do
         shift
       ;;
       h)
+        echo "$usage"
         exit 0
       ;;
       v)
