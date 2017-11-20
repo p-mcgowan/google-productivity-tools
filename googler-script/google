@@ -26,6 +26,7 @@ Browser wrapper script. With no options given, google searches the URL string.
   -v            Print the full url to console before opening.
   -d            Print the full url to console instead of opening.
   -D            Run with '--disable-web-security' flag (development).
+  -L            Run with '--enable-logging --v=1' flag (development).
   -h            Show this menu"
 
 argsUntilNextOpt() {
@@ -99,6 +100,9 @@ while [ "${1:0:1}" == "-" ]; do
       D)
         optStack[$stackIndex]="${optStack[$stackIndex]} --disable-web-security"
       ;;
+      L)
+        optStack[$stackIndex]="${optStack[$stackIndex]} --enable-logging --log-level=0"
+      ;;
       n)
         optStack[$stackIndex]="${optStack[$stackIndex]} --new-window"
       ;;
@@ -131,7 +135,7 @@ while [ "${1:0:1}" == "-" ]; do
       P)
         plusInsteadOfSpaces=true
       ;;
-      *) echo "Unknow option \`$1'. Try $(basename $0) -h for more info" && exit 1;;
+      *) echo "Unknow option \`$arg'. Try $(basename $0) -h for more info" && exit 1;;
     esac
   done
 done
