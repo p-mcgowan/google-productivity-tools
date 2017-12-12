@@ -53,6 +53,11 @@ declare -a urlStack
 declare -a optStack
 stackIndex=0
 
+# Read from pipe
+if read -t 0; then
+  set -- $(cat)
+fi
+
 if [ $# == 0 ]; then
   urlStack[$stackIndex]="$homepage"
   ((stackIndex++))
