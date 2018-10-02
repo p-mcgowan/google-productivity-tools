@@ -53,49 +53,47 @@ let onSelect = (index, ctrl) => {
                 });
                 return;
         }
+    }).catch(e => {
+        console.trace.bind(window.console)(e);
+        reject(e);
     });
 }
 
 let suggestionResults = [];
 
 let doSuggestions = (e, text) => {
-    return new Promise((resolve, reject) =>{
-        suggestionResults = [];
-        Suggester.getSuggestions(text).then(res => {
-            suggestionResults = res;
-            console.log({ text, res });
-            let template = document.getElementById('selectTemplate');
-            let results = document.getElementById('modalResults');
-            results.innerHTML = '';
+    suggestionResults = [];
+    return Suggester.getSuggestions(text).then(res => {
+        suggestionResults = res;
+        console.log({ text, res });
+        let template = document.getElementById('selectTemplate');
+        let results = document.getElementById('modalResults');
+        results.innerHTML = '';
 
-            selectIndex = 0;
+        selectIndex = 0;
 
-            let count = 0;
-            res.forEach(r => {
-                let el = document.createElement('div');
-                el.classList.add('selection');
-                el.innerHTML = r.description;
-                if (!count) {
-                    el.setAttribute('selected', '');
-                }
+        let count = 0;
+        res.forEach(r => {
+            let el = document.createElement('div');
+            el.classList.add('selection');
+            el.innerHTML = r.description;
+            if (!count) {
+                el.setAttribute('selected', '');
+            }
 
-                el.setAttribute('number', count);
+            el.setAttribute('number', count);
 
-                el.addEventListener('click', e => {
-                    onSelect(el.getAttribute('number'), e.ctrlKey);
-                });
-
-                results.appendChild(el);
-                count++;
+            el.addEventListener('click', e => {
+                onSelect(el.getAttribute('number'), e.ctrlKey);
             });
 
-            updateActive();
-            resolve();
-        }).catch(e => {
-            console.trace.bind(window.console)(e);
-            reject(e);
+            results.appendChild(el);
+            count++;
         });
-    })
+
+        updateActive();
+        return;
+    });
 }
 
 let selectIndex = 0;
