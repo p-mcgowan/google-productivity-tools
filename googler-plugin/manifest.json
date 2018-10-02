@@ -1,30 +1,36 @@
 {
-  "manifest_version" : 2,
-  "name"             : "Googler",
-  "version"          : "1.0",
-  "description"      : "Efficientize your Googling",
+  "manifest_version": 2,
+  "name": "Googler",
+  "version": "1.0",
+  "description": "Efficientize your Googling",
   "icons": {
     "16": "googler.png"
   },
-
   "browser_action": {
-    "default_icon"  : "googler.png",
-    "default_popup" : "js/popup/popup.html"
+    "default_icon": "googler.png",
+    "default_popup": "js/popup/popup.html"
   },
-
   "background": {
-    "scripts"    : ["js/background/background.js"],
-    "persistent" : false
+    "scripts": [
+      "js/background/background.js"
+    ],
+    "persistent": false
   },
   "options_ui": {
     "page": "js/options/options.html",
     "chrome_style": true
   },
-
   "omnibox": {
-    "keyword" : "k"
+    "keyword": "k"
   },
-
+  "commands": {
+    "launch-googler": {
+      "suggested_key": {
+        "default": "Ctrl+Space"
+      },
+      "description": "Toggle feature foo"
+    }
+  },
   "permissions": [
     "https://ajax.googleapis.com/",
     "activeTab",

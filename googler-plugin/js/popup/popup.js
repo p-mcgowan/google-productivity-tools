@@ -45,7 +45,11 @@ let onSelect = (index, ctrl) => {
             break;
             default:
                 // probably some kind of error...
-                console.log({ index: index, sugs: suggestionResults });
+                console.log({
+                    index,
+                    suggestionResults,
+                    error: `Uknown suggestion type: ${suggestion.type}`
+                });
                 return;
         }
     });
@@ -58,7 +62,7 @@ let doSuggestions = (e, text) => {
         suggestionResults = [];
         Suggester.getSuggestions(text).then(res => {
             suggestionResults = res;
-            console.log({ text: text, res: res });
+            console.log({ text, res });
             let template = document.getElementById('selectTemplate');
             let results = document.getElementById('modalResults');
             results.innerHTML = '';
@@ -67,18 +71,19 @@ let doSuggestions = (e, text) => {
 
             let count = 0;
             res.forEach(r => {
-                let el = template.content.cloneNode(true).firstElementChild;
+                let el = document.createElement('div');
+                el.classList.add('selection');
                 el.innerHTML = r.description;
-                el.onclick = () => { onSelect(selectIndex); };
                 if (!count) {
                     el.setAttribute('selected', '');
                 }
+
                 el.setAttribute('number', count);
-                // el.onmouseover = (e) => {
-                //     oldIndex = selectIndex;
-                //     selectIndex = e.target.getAttribute('number');
-                //     updateActive();
-                // };
+
+                el.addEventListener('click', e => {
+                    onSelect(el.getAttribute('number'), e.ctrlKey);
+                });
+
                 results.appendChild(el);
                 count++;
             });
@@ -107,12 +112,12 @@ let updateActive = () => {
 document.onkeydown = (e) => {
     oldIndex = selectIndex;
     switch (e.keyCode) {
-        case 40: /* up */
+        case 40: /* down */
             selectIndex++;
             e.preventDefault();
             updateActive();
             break;
-        case 38: /* down */
+        case 38: /* up */
             selectIndex--;
             if (selectIndex == -1) {
                 selectIndex = suggestionResults.length;
@@ -124,21 +129,23 @@ document.onkeydown = (e) => {
             onSelect(selectIndex, e.ctrlKey);
             break;
         default:
-            return
+            return;
     }
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
     let settings = document.getElementById('settingsButton');
-    settings.onclick = () => { chrome.runtime.openOptionsPage(); };
+    settings.addEventListener('click', () => {
+        chrome.runtime.openOptionsPage();
+    });
 
     let input = document.getElementById('modalInput');
     input.focus();
-    input.oninput = new Debounce().run(event => {
+    const debouncer = new Debounce();
+    input.addEventListener('input', debouncer.run(event => {
         loadingSuggestions = doSuggestions(event, event.target.value);
-    }, 150);
-
+    }, 150));
 });
 
 // var app = chrome.runtime.getBackgroundPage();

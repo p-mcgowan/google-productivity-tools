@@ -185,3 +185,9 @@ chrome.omnibox.onInputEntered.addListener(content => {
         break;
     }
 });
+
+// chrome.commands.onCommand.addListener(command => {
+//     if (command == 'launch-googler') {
+//         //
+//     }
+// });
