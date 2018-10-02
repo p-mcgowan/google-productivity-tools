@@ -1,6 +1,7 @@
 let onSelect = (index, ctrl) => {
     loadingSuggestions.then(() => {
         let suggestion = suggestionResults[index];
+        if (!suggestion) { return; }
 
         switch (suggestion.type) {
             case 'bookmark':
@@ -97,7 +98,9 @@ let doSuggestions = (e, text) => {
     })
 }
 
-let selectIndex = 0, oldIndex = 0, loadingSuggestions;
+let selectIndex = 0;
+let oldIndex = 0;
+let loadingSuggestions = Promise.resolve();
 
 let updateActive = () => {
     let suggestionElements = document.getElementsByClassName('selection');
@@ -145,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const debouncer = new Debounce();
     input.addEventListener('input', debouncer.run(event => {
         loadingSuggestions = doSuggestions(event, event.target.value);
-    }, 150));
+    }, 100));
 });
 
 // var app = chrome.runtime.getBackgroundPage();
