@@ -9,7 +9,10 @@
         <title>Getting Started Extension's Popup</title>
         <style>
             html {
-                width: 785px;
+                /*width: 785px;*/
+                min-width: 600px;
+                width: 100%;
+                max-width: 80vw;
             }
 
             body {
@@ -19,8 +22,6 @@
             }
 
             #popupmodal {
-                width: 100%;
-                max-width: 800px;
                 display: flex;
                 flex-direction: column;
             }
@@ -58,7 +59,7 @@
                 padding: 8px;
                 background-color: rgba(0, 0, 0, 0.1);
                 margin: 2px 0;
-                border-radius: 4px;
+                border-radius: 2px;
             }
 
             .selection[selected] {
