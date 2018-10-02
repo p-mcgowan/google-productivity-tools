@@ -74,11 +74,11 @@ let doSuggestions = (e, text) => {
                     el.setAttribute('selected', '');
                 }
                 el.setAttribute('number', count);
-                el.onmouseover = (e) => {
-                    oldIndex = selectIndex;
-                    selectIndex = e.target.getAttribute('number');
-                    updateActive();
-                };
+                // el.onmouseover = (e) => {
+                //     oldIndex = selectIndex;
+                //     selectIndex = e.target.getAttribute('number');
+                //     updateActive();
+                // };
                 results.appendChild(el);
                 count++;
             });
@@ -107,7 +107,7 @@ let updateActive = () => {
 document.onkeydown = (e) => {
     oldIndex = selectIndex;
     switch (e.keyCode) {
-        case 40: /* down */
+        case 40: /* up */
             selectIndex++;
             e.preventDefault();
             updateActive();
