@@ -8,9 +8,8 @@ let onSelect = (index, ctrl) => {
                 // Update the current tab's url, or if ctrl-enter pressed, a new tab
                 if (!ctrl) {
                     chrome.tabs.getSelected(null, tab => {
-                        console.log(suggestion.url);
                         if (/^javascript/.test(suggestion.url)) {
-                            chrome.tabs.executeScript({ code: suggestion.url });
+                            chrome.tabs.executeScript({ code: suggestion.url.replace(/^\ *javascript\ *:\ */, '')});
                         } else {
                             chrome.tabs.update(tab.id, { url: suggestion.url });
                         }
