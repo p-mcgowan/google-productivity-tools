@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# bookmarks - try whole word match, otherwise try fuzzy
+
 browser='google-chrome'
 bookmarks=~/.config/google-chrome/Default/Bookmarks
 logfile=~/tmp/google-script.log
