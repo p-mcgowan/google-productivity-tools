@@ -4,7 +4,6 @@ links = document.querySelectorAll('link[title="applied_subreddit_stylesheet"]');
 
 expandos = document.querySelectorAll('.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand');
 [].forEach.call(expandos, expando => {
-    console.log(expando, typeof expando.onclick, typeof expando.click);
     if (!expando || expando.innerHTML.indexOf('+') !== -1) {
         return;
     }
