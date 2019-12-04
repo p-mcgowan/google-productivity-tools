@@ -1,4 +1,8 @@
-let onSelect = (index, ctrl) => {
+/**
+ * Handles all the popup stuff (usually activated by the keyboard)
+ */
+
+let onSelect = (index, ctrl, shift) => {
     loadingSuggestions.then(() => {
         let suggestion = suggestionResults[index];
         if (!suggestion) { return; }
@@ -17,7 +21,7 @@ let onSelect = (index, ctrl) => {
                         window.close();
                     });
                 } else {
-                    chrome.tabs.create({ url: suggestion.url, active: false });
+                    chrome.tabs.create({ url: suggestion.url, active: shift });
                 }
             break;
             case 'tab':
@@ -35,7 +39,7 @@ let onSelect = (index, ctrl) => {
                         window.close();
                     });
                 } else {
-                    chrome.tabs.create({ url: suggestion.url, active: false });
+                    chrome.tabs.create({ url: suggestion.url, active: shift });
                 }
             break;
             case 'lucky':
@@ -46,7 +50,7 @@ let onSelect = (index, ctrl) => {
                         window.close();
                     });
                 } else {
-                    chrome.tabs.create({ url: suggestion.url, active: false });
+                    chrome.tabs.create({ url: suggestion.url, active: shift });
                 }
             break;
             default:
@@ -89,7 +93,7 @@ let doSuggestions = (e, text) => {
             el.setAttribute('number', count);
 
             el.addEventListener('click', e => {
-                onSelect(el.getAttribute('number'), e.ctrlKey);
+                onSelect(el.getAttribute('number'), e.ctrlKey, e.shiftKey);
             });
 
             results.appendChild(el);
@@ -132,7 +136,7 @@ document.onkeydown = (e) => {
             updateActive();
             break;
         case 13: /* enter */
-            onSelect(selectIndex, e.ctrlKey);
+            onSelect(selectIndex, e.ctrlKey, e.shiftKey);
             break;
         default:
             return;

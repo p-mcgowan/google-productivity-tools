@@ -10,8 +10,11 @@ class Debounce {
      * @param  {Boolean}  immediate - If true, runs immediately
      * @return {Function}           - The debounce activation function
      */
-    run(func, wait, immediate) {
+    run(func, wait, immediate, init) {
         let context = this;
+        if (typeof init === 'function') {
+            init();
+        }
 
         return function () {
             var later = () => {

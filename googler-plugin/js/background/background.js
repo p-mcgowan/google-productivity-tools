@@ -1,3 +1,6 @@
+/**
+ * Handles omnibox stuff - runs the in background, basically a dupe of popup.js
+ */
 // Hash for suggestion data
 let Data = { suggestions: {}, default: {} };
 // Suggestion array
