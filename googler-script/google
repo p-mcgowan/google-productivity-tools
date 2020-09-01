@@ -2,11 +2,18 @@
 
 # bookmarks - try whole word match, otherwise try fuzzy
 
-browser='google-chrome'
+browser="${GOOGLER_BROWSER:-google-chrome}"
 bookmarks=~/.config/google-chrome/Default/Bookmarks
-logfile=~/tmp/google-script.log
+# bookmarks=~/.config/google-chrome/Profile\ 1/Bookmarks
+
+configFile=~/.config/google-script/config
+
+logfile=/tmp/google-script.log
 homepage='google.ca'
-mkdir -p ~/tmp/
+
+if [ -f $configFile ]; then
+  source $configFile
+fi
 
 usage="\
 Usage: $(basename $0) [OPTIONS] URL
