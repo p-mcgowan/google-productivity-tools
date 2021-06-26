@@ -1,0 +1,20 @@
+{
+  "name": "Reds plugin",
+  "description": "Redirect 'www' or 'new' to 'old', remove styling",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "permissions": [
+    "webRequest",
+    "*://*.reddit.com/*",
+    "webRequestBlocking"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://old.reddit.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
