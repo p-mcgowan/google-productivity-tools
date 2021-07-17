@@ -15,6 +15,10 @@
     {
       "matches": ["*://old.reddit.com/*"],
       "js": ["content.js"]
+    },
+    {
+      "matches": ["*://www.reddit.com/*","*://reddit.com/*"],
+      "js": ["redirect.js"]
     }
   ]
 }
