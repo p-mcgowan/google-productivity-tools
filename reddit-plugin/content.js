@@ -7,7 +7,7 @@ const reds = () => {
 
   removeIfPresent('body > div.side');
   removeIfPresent('body > div.content > section.infobar');
-  removeIfPresent('.header-bottom-left > a');
+  removeIfPresent('#header-bottom-left > a');
 
   const mainContent = document.querySelector('body > div.content');
   if (mainContent) {
