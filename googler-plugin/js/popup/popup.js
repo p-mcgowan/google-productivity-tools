@@ -13,7 +13,7 @@ let onSelect = (index, ctrl, shift) => {
                 if (!ctrl) {
                     chrome.tabs.getSelected(null, tab => {
                         if (/^javascript/.test(suggestion.url)) {
-                            const code = suggestion.url.replace(/^\ *javascript\ *:\ */, '');
+                            const code = decodeURIComponent(suggestion.url.replace(/^\ *javascript\ *:\ */, ''));
                             chrome.tabs.executeScript(tab.id, { code }, console.log);
                         } else {
                             chrome.tabs.update(tab.id, { url: suggestion.url });
