@@ -1,5 +1,8 @@
 /* collapse comments and remove custom subreddit styles */
 const reds = () => {
+  if (localStorage.getItem('nored')) {
+    return;
+  }
   const links = document.querySelectorAll(`link[title="applied_subreddit_stylesheet"]`);
   const removeIfPresent = (qs) => (document.querySelector(qs) || { remove: () => null }).remove();
 

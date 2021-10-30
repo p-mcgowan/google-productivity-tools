@@ -1,5 +1,8 @@
 /* redirect to old reddit */
 const rediretCallback = (details) => {
+  if (localStorage.getItem('nored')) {
+    return;
+  }
   return { redirectUrl: details.url.replace(/:\/\/(new|www)\.reddit\.com/, '://old.reddit.com') };
 };
 
