@@ -1,10 +1,14 @@
 #!/bin/bash
 
+# set -x
+# exec &>/tmp/test
+
 # bookmarks - try whole word match, otherwise try fuzzy
 
 browser="${GOOGLER_BROWSER:-google-chrome}"
 bookmarks=~/.config/google-chrome/Default/Bookmarks
 # bookmarks=~/.config/google-chrome/Profile\ 1/Bookmarks
+# ~/.config/BraveSoftware/Brave-Browser/Default/Bookmarks
 
 configFile=~/.config/google-script/config
 
@@ -13,6 +17,13 @@ homepage='google.ca'
 
 if [ -f $configFile ]; then
   source $configFile
+else
+  mkdir -p $(dirname $configFile)
+  echo "\
+browser=\"$browser\"
+bookmarks=~/.config/google-chrome/Default/Bookmarks
+logfile=/tmp/google-script.log
+homepage='google.ca'" >$configFile
 fi
 
 usage="\
@@ -62,9 +73,10 @@ declare -a urlStack
 declare -a optStack
 stackIndex=0
 
-# Read from pipe
-if read -t 0; then
-  set -- $(cat)
+# pipe or redirect - if stdout closed or not related to a terminal,
+# append read to args (if any)
+if [[ ! -t 0 ]]; then
+  set -- "$@" $(cat)
 fi
 
 if [ $# == 0 ]; then
