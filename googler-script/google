@@ -110,7 +110,10 @@ while [ "${1:0:1}" == "-" ]; do
             urlStack[$stackIndex]=$url
           ;;
           w)
-            urlStack[$stackIndex]="${str}"
+            if [[ ! "$str" =~ '://' ]]; then
+              str=http://$str
+            fi
+            urlStack[$stackIndex]=$str
           ;;
           s)
             urlStack[$stackIndex]="${homepage}/search?q=${str}"
