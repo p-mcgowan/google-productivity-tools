@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Tab volume",
+  "version": "1.0",
+  "description": "Adjust tab volume",
+  "icons": {
+    "16": "tab-volume.png"
+  },
+  "browser_action": {
+    "default_icon": "tab-volume.png",
+    "default_popup": "js/popup/popup.html"
+  },
+  "background": {
+    "scripts": ["js/background/background.js"]
+  },
+  "permissions": [
+    "activeTab",
+    "tabCapture"
+  ]
+}
