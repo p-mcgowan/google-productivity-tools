@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <style type="text/css">
+      label {
+        white-space: nowrap;
+      }
+      textarea {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Beddit</h3>
+
+    <label for="enabled">Enabled</label>
+    <input id="enabled" type="checkbox" name="enabled" />
+
+    <hr />
+
+    <label for="ignored">Ignore subreddits (comma, space, newline sep)</label>
+    <textarea rows="10" id="ignored" name="ignored"></textarea>
+
+    <script src="toggle.js"></script>
+  </body>
+</html>

@@ -75,15 +75,17 @@ class Suggester {
                 // Loop over results and parse them into suggestions
                 bookmarks.forEach((bookmark) => {
                   // Don't push folders
-                  if (bookmark.url) {
-                    let index = `${this.encodeHTML(bookmark.title)} => bookmark`;
-                    suggestions.push({
-                      description: index,
-                      content: this.encodeHTML(bookmark.url),
-                      type: 'bookmark',
-                      url: bookmark.url,
-                    });
+                  if (!bookmark.url) {
+                    return;
                   }
+
+                  let index = `${this.encodeHTML(bookmark.title)} => bookmark`;
+                  suggestions.push({
+                    description: index,
+                    content: this.encodeHTML(bookmark.url),
+                    type: 'bookmark',
+                    url: bookmark.url,
+                  });
                 });
 
                 resolve('using bookmarks');

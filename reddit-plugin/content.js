@@ -1,8 +1,22 @@
 /* collapse comments and remove custom subreddit styles */
-const reds = () => {
-  if (localStorage.getItem('nored')) {
-    return;
+
+const fadeSubreddit = (subredditAnchor) => {
+  let thing = subredditAnchor;
+  for (let i = 0; i < 4; ++i) {
+    thing = thing?.parentElement || thing;
   }
+  if (thing) {
+    thing.style.opacity = 0.3;
+  }
+};
+
+const reds = (fadeSubreddits) => {
+  document.querySelectorAll('a.subreddit').forEach((a) => {
+    if (fadeSubreddits[a.innerText?.trim()?.toLowerCase()]) {
+      fadeSubreddit(a);
+    }
+  });
+
   const links = document.querySelectorAll(`link[title="applied_subreddit_stylesheet"]`);
   const removeIfPresent = (qs) => (document.querySelector(qs) || { remove: () => null }).remove();
 
@@ -37,4 +51,9 @@ const reds = () => {
   }
 };
 
-reds();
+chrome.storage.local.get(['enabled', 'ignored'], (items) => {
+  if (!items.enabled) {
+    return;
+  }
+  reds(items.ignored);
+});
