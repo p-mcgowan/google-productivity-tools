@@ -10,48 +10,86 @@ const fadeSubreddit = (subredditAnchor) => {
   }
 };
 
+const assertStyle = (sheet) => {
+  const style =
+    document.getElementById("redstyle") || document.createElement("style");
+  style.innerText = sheet;
+  if (!style.id) {
+    style.id = "redstyle";
+    document.head.append(style);
+  }
+};
+
 const reds = (fadeSubreddits) => {
-  document.querySelectorAll('a.subreddit').forEach((a) => {
+  document.querySelectorAll("a.subreddit").forEach((a) => {
     if (fadeSubreddits[a.innerText?.trim()?.toLowerCase()]) {
       fadeSubreddit(a);
     }
   });
 
-  const links = document.querySelectorAll(`link[title="applied_subreddit_stylesheet"]`);
-  const removeIfPresent = (qs) => (document.querySelector(qs) || { remove: () => null }).remove();
+  document
+    .querySelectorAll(`link[title="applied_subreddit_stylesheet"]`)
+    .forEach((link) => link.remove());
+  const removeIfPresent = (qs) =>
+    (document.querySelector(qs) || { remove: () => null }).remove();
 
-  [].forEach.call(links, (link) => link.remove());
+  document
+    .querySelectorAll(`.top-matter .tagline`)
+    .forEach((tagline) =>
+      tagline.replaceChildren(
+        ...tagline.querySelectorAll("time, a.subreddit, a.author")
+      )
+    );
 
-  removeIfPresent('body > div.side');
-  removeIfPresent('body > div.content > section.infobar');
-  removeIfPresent('#header-bottom-left > a');
+  removeIfPresent("body > div.side");
+  removeIfPresent("body > div.content > section.infobar");
+  removeIfPresent("#header-bottom-left > a");
+  assertStyle(`
+    .top-matter .title *:not(a) {
+      visibility: hidden;
+    }
+    .top-matter ul.flat-list li:not(:first-of-type) {
+      display: none;
+    }
+    .top-matter .tagline * {
+      margin-right: 1rem;
+    }
 
-  const mainContent = document.querySelector('body > div.content');
+   /* a.author {
+      display: none;
+    }
+    #header-bottom-left .pagename a.author {
+      display: none;
+      visibility: visible;
+    }*/
+  `);
+
+  const mainContent = document.querySelector("body > div.content");
   if (mainContent) {
     mainContent.style.marginRight = mainContent.style.marginLeft;
   }
 
   const expandos = document.querySelectorAll(
-    '.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand'
+    ".commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand"
   );
   [].forEach.call(expandos, (expando) => {
-    if (!expando || expando.innerHTML.indexOf('+') !== -1) {
+    if (!expando || expando.innerHTML.indexOf("+") !== -1) {
       return;
     }
-    if (typeof expando.click === 'function') {
+    if (typeof expando.click === "function") {
       expando.click();
-    } else if (typeof expando.onclick === 'function') {
+    } else if (typeof expando.onclick === "function") {
       expando.onclick();
     }
   });
 
-  const styleOn = document.getElementById('res-style-checkbox');
+  const styleOn = document.getElementById("res-style-checkbox");
   if (styleOn && styleOn.checked === true) {
     styleOn.click();
   }
 };
 
-chrome.storage.local.get(['enabled', 'ignored'], (items) => {
+chrome.storage.local.get(["enabled", "ignored"], (items) => {
   if (!items.enabled) {
     return;
   }
