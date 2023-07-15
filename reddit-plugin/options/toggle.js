@@ -1,10 +1,11 @@
 const mapIgnored = (subs) => {
   const ignored = {};
   for (const sub of subs.split(/[,\ \r\n]+/)) {
-    const fmtd = sub
-      ?.trim()
-      ?.toLowerCase()
-      .replace(/^(r\/)?/, 'r/');
+    const normal = sub?.trim()?.toLowerCase();
+    if (!normal) {
+      continue;
+    }
+    const fmtd = normal.replace(/^(r\/)?/, 'r/');
     ignored[fmtd] = true;
   }
 
