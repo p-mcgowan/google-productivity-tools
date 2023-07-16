@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "Disable middle mouse scrolling on windows",
+  "version": "1.0",
+  "description": "see name",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "file://*/*"],
+      "js": ["js/lib/disable-middle-mouse.js"]
+    }
+  ]
+}
