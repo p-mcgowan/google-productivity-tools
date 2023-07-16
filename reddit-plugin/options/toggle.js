@@ -13,10 +13,6 @@ const mapIgnored = (subs) => {
 };
 
 const saveOptions = () => {
-  console.log({
-    enabled: document.getElementById('enabled').checked,
-    ignored: mapIgnored(document.getElementById('ignored').value),
-  });
   chrome.storage.local.set({
     enabled: document.getElementById('enabled').checked,
     ignored: mapIgnored(document.getElementById('ignored').value),
