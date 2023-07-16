@@ -13,14 +13,14 @@ const mapIgnored = (subs) => {
 };
 
 const saveOptions = () => {
-  chrome.storage.local.set({
+  chrome.storage.sync.set({
     enabled: document.getElementById('enabled').checked,
     ignored: mapIgnored(document.getElementById('ignored').value),
   });
 };
 
 const restoreOptions = () => {
-  chrome.storage.local.get(['enabled', 'ignored'], (items) => {
+  chrome.storage.sync.get(['enabled', 'ignored'], (items) => {
     document.getElementById('enabled').checked = items.enabled || false;
     document.getElementById('ignored').value = Object.keys(items.ignored || {}).join('\n');
   });

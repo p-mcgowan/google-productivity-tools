@@ -6,53 +6,35 @@ const fadeSubreddit = (subredditAnchor) => {
     thing = thing?.parentElement || thing;
   }
   if (thing) {
-    thing.classList.add('beddit-faded')
+    thing.classList.add('beddit-faded');
   }
 };
 
 const assertStyle = (sheet) => {
-  const style =
-    document.getElementById("redstyle") || document.createElement("style");
+  const style = document.getElementById('redstyle') || document.createElement('style');
   style.innerHTML = sheet;
   if (!style.id) {
-    style.id = "redstyle";
+    style.id = 'redstyle';
     document.head.append(style);
   }
 };
 
 const reds = (fadeSubreddits) => {
-  document.querySelectorAll("a.subreddit").forEach((a) => {
+  document.querySelectorAll('a.subreddit').forEach((a) => {
     if (fadeSubreddits[a.innerText?.trim()?.toLowerCase()]) {
       fadeSubreddit(a);
     }
   });
 
-  document
-    .querySelectorAll(`link[title="applied_subreddit_stylesheet"]`)
-    .forEach((link) => link.remove());
+  document.querySelectorAll(`link[title="applied_subreddit_stylesheet"]`).forEach((link) => link.remove());
   const hideIfPresent = (qs) => document.querySelector(qs)?.classList.add('beddit-hidden');
 
-  document
-    .querySelectorAll(`.top-matter .tagline`)
-    .forEach((tagline) =>
-      tagline.replaceChildren(
-        ...tagline.querySelectorAll("time, a.subreddit, a.author")
-      )
-    );
+  document.querySelectorAll(`.top-matter .tagline`).forEach((tagline) => tagline.classList.add('beddit-tagline'));
 
-  hideIfPresent("body > div.side");
-  hideIfPresent("body > div.content > section.infobar");
-  hideIfPresent("#header-bottom-left > a");
+  hideIfPresent('body > div.side');
+  hideIfPresent('body > div.content > section.infobar');
+  hideIfPresent('#header-bottom-left > a');
   assertStyle(`
-    .beddit-enabled .top-matter .title *:not(a) {
-      visibility: hidden;
-    }
-    .beddit-enabled .top-matter ul.flat-list li:not(:first-of-type, .first) {
-      display: none;
-    }
-    .beddit-enabled .top-matter .tagline * {
-      margin-right: 1rem;
-    }
     .beddit-enabled .beddit-faded .rank,
     .beddit-enabled .beddit-faded .midcol,
     .beddit-enabled .beddit-faded .thumbnail,
@@ -65,26 +47,46 @@ const reds = (fadeSubreddits) => {
     .beddit-enabled .media-preview-content {
       width: 100%;
     }
+    .beddit-enabled .top-matter .title *:not(a) {
+      visibility: hidden;
+    }
+    .beddit-enabled .top-matter ul.flat-list li:not(:first-of-type, .first) {
+      display: none;
+    }
+    .beddit-enabled .beddit-tagline {
+      font-size: 0px;
+    }
+    .beddit-enabled .beddit-tagline time.live-timestamp,
+    .beddit-enabled .beddit-tagline a.subreddit,
+    .beddit-enabled .beddit-tagline a.author {
+      font-size: x-small;
+      margin-right: 1rem;
+    }
+    .beddit-enabled .beddit-tagline .awardings-bar {
+      display: none;
+    }
   `);
 
-  document.querySelectorAll(
-    ".commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand"
-  ).forEach((expando) => {
-    if (!expando || expando.innerHTML.indexOf("+") !== -1) {
-      return;
-    }
-    expando.click?.();
-    expando.onclick?.();
-  });
+  document
+    .querySelectorAll(
+      '.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand'
+    )
+    .forEach((expando) => {
+      if (!expando || expando.innerHTML.indexOf('+') !== -1) {
+        return;
+      }
+      expando.click?.();
+      expando.onclick?.();
+    });
 
-  const styleOn = document.getElementById("res-style-checkbox");
+  const styleOn = document.getElementById('res-style-checkbox');
   if (styleOn && styleOn.checked === true) {
     styleOn.click();
   }
 };
 
 chrome.storage.onChanged.addListener(() => {
-  chrome.storage.local.get(["enabled", "ignored"], (items) => {
+  chrome.storage.sync.get(['enabled', 'ignored'], (items) => {
     if (items.enabled) {
       document.body.classList.add('beddit-enabled');
     } else {
@@ -94,7 +96,7 @@ chrome.storage.onChanged.addListener(() => {
     reds(items.ignored);
   });
 });
-chrome.storage.local.get(["enabled", "ignored"], (items) => {
+chrome.storage.sync.get(['enabled', 'ignored'], (items) => {
   if (items.enabled) {
     document.body.classList.add('beddit-enabled');
   } else {

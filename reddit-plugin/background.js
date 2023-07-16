@@ -1,7 +1,11 @@
 /* redirect to old reddit */
 const rediretCallback = (details) => {
   chrome.storage.local.get(['enabled'], (items) => {
-    return !items.enabled ? null : { redirectUrl: details.url.replace(/:\/\/(new|www)\.reddit\.com/, '://old.reddit.com') };
+    return !items.enabled
+      ? null
+      : {
+          redirectUrl: details.url.replace(/:\/\/(new|www)\.reddit\.com/, '://old.reddit.com'),
+        };
   });
 };
 
