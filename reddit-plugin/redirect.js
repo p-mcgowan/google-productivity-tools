@@ -1,4 +1,4 @@
-chrome.storage.local.get(['enabled'], (items) => {
+chrome.storage.sync.get(['enabled'], (items) => {
   if (!items.enabled) {
     return;
   }
