@@ -14,4 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   volume.removeAttribute('disabled');
 
   volume.addEventListener('input', () => emit({ name: 'set-tab-volume', tabId: activeTab.id, value: volume.value }));
+
+  const abort = document.getElementById('abort');
+  abort.addEventListener('click', () => emit({ name: 'clear-tab-volume', tabId: activeTab.id, value: volume.value }));
 });
