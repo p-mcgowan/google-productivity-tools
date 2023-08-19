@@ -1,27 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
     <style type="text/css">
-      label {
-        white-space: nowrap;
+      body {
+        min-width: 400px;
       }
       textarea {
         width: 100%;
+      }
+      input[type='checkbox'] {
+        min-width: 1rem;
+        min-height: 1rem;
+        margin: 0;
+      }
+      .enable {
+        display: flex;
+        align-items: center;
+      }
+      .enable label {
+        padding-right: 0.5rem;
+      }
+
+      .enable label,
+      .enable input {
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
     <h3>Beddit</h3>
 
-    <label for="enabled">Enabled</label>
-    <input id="enabled" type="checkbox" name="enabled" />
+    <div class="enable">
+      <label for="enabled">Enabled</label>
+      <input id="enabled" type="checkbox" name="enabled" />
+    </div>
 
     <hr />
 
-    <label for="ignored">Ignore subreddits (comma, space, newline sep)</label>
+    <label for="ignored"
+      >Ignore subreddits with r/&lt;name&gt; (comma, space, newline sep), ignore titles with t/&lt;text&gt;</label
+    >
     <textarea rows="10" id="ignored" name="ignored"></textarea>
 
     <script src="toggle.js"></script>

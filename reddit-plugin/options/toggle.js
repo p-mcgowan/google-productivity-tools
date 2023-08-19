@@ -5,8 +5,7 @@ const mapIgnored = (subs) => {
     if (!normal) {
       continue;
     }
-    const fmtd = normal.replace(/^(r\/)?/, 'r/');
-    ignored[fmtd] = true;
+    ignored[normal] = true;
   }
 
   return ignored;

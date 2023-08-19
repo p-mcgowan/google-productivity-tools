@@ -20,8 +20,28 @@ const assertStyle = (sheet) => {
 };
 
 const reds = (fadeSubreddits) => {
+  const keys = Object.keys(fadeSubreddits)
+    .reduce((filters, key) => {
+      if (key[0] === 't' && key[1] === '/') {
+        filters.push(key.slice(2));
+      }
+
+      return filters;
+    }, [])
+    .join('|');
+
+  const textFilter = keys ? new RegExp(keys, 'i') : null;
+
   document.querySelectorAll('a.subreddit').forEach((a) => {
     if (fadeSubreddits[a.innerText?.trim()?.toLowerCase()]) {
+      fadeSubreddit(a);
+    }
+    const title = a?.parentElement?.parentElement?.firstChild?.innerText?.toLowerCase?.();
+    if (!title) {
+      return;
+    }
+
+    if (textFilter?.test?.(title)) {
       fadeSubreddit(a);
     }
   });
@@ -69,7 +89,7 @@ const reds = (fadeSubreddits) => {
 
   document
     .querySelectorAll(
-      '.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand'
+      '.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand',
     )
     .forEach((expando) => {
       if (!expando || expando.innerHTML.indexOf('+') !== -1) {

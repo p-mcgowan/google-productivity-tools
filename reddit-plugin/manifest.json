@@ -3,12 +3,7 @@
   "description": "Redirect 'www' or 'new' to 'old', remove styling",
   "version": "0.0.1",
   "manifest_version": 2,
-  "permissions": [
-    "webRequest",
-    "*://*.reddit.com/*",
-    "webRequestBlocking",
-    "storage"
-  ],
+  "permissions": ["webRequest", "*://*.reddit.com/*", "webRequestBlocking", "storage"],
   "browser_action": {
     "default_popup": "options/toggle.html",
     "default_icon": "green-reddit16x16.png"
@@ -19,7 +14,7 @@
       "js": ["content.js"]
     },
     {
-      "matches": ["*://www.reddit.com/*","*://reddit.com/*"],
+      "matches": ["*://www.reddit.com/*", "*://reddit.com/*"],
       "js": ["redirect.js"]
     }
   ]
