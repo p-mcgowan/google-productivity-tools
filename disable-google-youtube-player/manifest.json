@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Disable google youtube mini player - always redirect to youtube",
+  "version": "1.0",
+  "description": "see name",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://google.com/*/*",
+        "https://*.google.com/*",
+        "https://*.google.ca/*",
+        "https://*.google.de/*"
+      ],
+      "js": ["js/lib/disable-mini-player.js"]
+    }
+  ]
+}
