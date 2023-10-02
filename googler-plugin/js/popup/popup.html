@@ -1,94 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="popup.css">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <script type="text/javascript" src="popup.js"></script>
-        <script type="text/javascript" src="../lib/Suggester.js"></script>
-        <script type="text/javascript" src="../lib/Debounce.js"></script>
-        <title>Getting Started Extension's Popup</title>
-        <style>
-            html {
-                min-width: 600px;
-                width: 100%;
-                max-width: 80vw;
-            }
-
-            body {
-                margin: 0;
-                padding: 8px;
-            }
-
-            #popupmodal {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .input-container {
-                display: flex;
-                justify-content: flex-end;
-                height: 50px;
-                align-items: center;
-            }
-
-            .input-container i {
-                color: rgba(0, 0, 0, 0.5);
-            }
-
-            #modalInput {
-                margin-right: 16px;
-                display: flex;
-                flex: 1;
-                border: 0;
-                border-bottom: 1px solid;
-            }
-
-            #modalInput:focus {
-                outline: 0;
-            }
-
-            #modalResults {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .selection {
-                white-space: nowrap;
-                padding: 8px;
-                background-color: rgba(0, 0, 0, 0.1);
-                margin: 2px 0;
-                border-radius: 2px;
-            }
-
-            #modalResults:hover .selection[selected] {
-                box-shadow: none;
-                background-color: rgba(0, 0, 0, 0.1);
-            }
-
-            #modalResults:hover .selection:hover, .selection[selected] {
-                box-shadow: rgba(60, 64, 67, .3) 0 1px 2px 0, rgba(60, 64, 67, .15) 0 1px 3px 1px;
-                cursor: pointer;
-                background-color: rgba(116, 163, 185, 0.4);
-            }
-
-            #settingsButton {
-                cursor: pointer;
-                border-radius: 50%;
-                padding: 4px;
-            }
-
-            #settingsButton:hover {
-                box-shadow: rgba(60, 64, 67, .3) 0 1px 2px 0, rgba(60, 64, 67, .15) 0 1px 3px 1px;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="popupmodal">
-            <div class="input-container">
-                <input id="modalInput" type="text" placeholder="Enter search query" />
-                <i id="settingsButton" class="material-icons icon-button">settings</i></a>
-            </div>
-            <div id="modalResults"></div>
-        </div>
-    </body>
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script type="text/javascript" src="popup.js"></script>
+    <script type="text/javascript" src="../lib/Suggester.js"></script>
+    <script type="text/javascript" src="../lib/Debounce.js"></script>
+    <link rel="stylesheet" type="text/css" href="popup.css" />
+    <title>Googler</title>
+  </head>
+  <body>
+    <div id="popupmodal">
+      <div class="input-container">
+        <input id="modalInput" type="text" placeholder="Enter search query" />
+        <i id="settingsButton" class="material-symbols-outlined icon-button">settings</i>
+      </div>
+      <div id="modalResults"></div>
+    </div>
+  </body>
 </html>

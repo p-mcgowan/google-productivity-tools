@@ -12,6 +12,7 @@
   },
   "background": {
     "scripts": [
+      "js/lib/Suggester.js",
       "js/background/background.js"
     ],
     "persistent": false

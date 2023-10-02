@@ -1,175 +1,56 @@
 /**
- * Handles omnibox stuff - runs the in background, basically a dupe of popup.js
+ * Handles omnibox stuff - runs the in background, functionality matches popup
  */
 // Hash for suggestion data
-let Data = { suggestions: {}, default: {} };
-// Suggestion array
-let suggestions = [];
+const Data = { suggestions: {}, default: {} };
 
 const encodeHTML = (str) => {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 };
 
-chrome.omnibox.onInputChanged.addListener((text, suggest) => {
-  suggestions = [];
-  Data = { suggestions: {}, default: {} };
+chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
+  const suggestions = await Suggester.getSuggestions(text);
 
-  if (text && text.length > 1) {
-    let flag;
-    // Catch flags
-    if (['b ', 't ', 'h ', 'l '].indexOf(text.substring(0, 2)) != -1) {
-      flag = text.substring(0, 1);
-      text = text.substring(2);
-
-      // Dont do anything on just a flag
-      if (text.length < 1) {
-        return;
-      }
-    }
-
-    let promises = [];
-
-    promises.push(
-      new Promise((resolve, reject) => {
-        // lucky search a string
-        if (flag === 'l') {
-          let suggestion = {
-            content: `lucky search: ${encodeHTML(text)}`,
-            description: `${encodeHTML(text)} => lucky search`,
-          };
-
-          Data.suggestions[suggestion.content] = {
-            type: 'lucky',
-            url: `http://google.ca/search?ie=UTF-8&oe=UTF-8&sourceid=navclient&btnI=1&q=${text}`,
-          };
-
-          suggestions.push(suggestion);
-          resolve('using lucky');
-        } else {
-          resolve(`lucky: flag = ${flag}`);
-        }
-      })
-    );
-
-    // search open tabs
-    promises.push(
-      new Promise((resolve, reject) => {
-        if (typeof flag === 'undefined' || flag === 't') {
-          chrome.tabs.query({ title: text }, (tabs) => {
-            tabs.forEach((tab, tabIndex) => {
-              let suggestion = {
-                content: `switch to tab: ${encodeHTML(tab.title)}`,
-                description: `${encodeHTML(tab.title)} => tab`,
-              };
-
-              Data.suggestions[suggestion.content] = {
-                type: 'tab',
-                windowId: tab.windowId,
-                tabId: tab.id,
-              };
-
-              suggestions.push(suggestion);
-            });
-
-            resolve('using tabs');
-          });
-        } else {
-          resolve(`tabs: flag = ${flag}`);
-        }
-      })
-    );
-
-    // search bookmarks
-    promises.push(
-      new Promise((resolve, reject) => {
-        if (typeof flag === 'undefined' || flag === 'b') {
-          // Search bookmark content
-          chrome.bookmarks.search(text, (bookmarks) => {
-            bookmarks.forEach((bookmark, bookmarkIndex) => {
-              // Don't push folders
-              if (bookmark.url) {
-                let suggestion = {
-                  content: encodeHTML(bookmark.url),
-                  description: `${encodeHTML(bookmark.title)} => bookmark`,
-                };
-
-                Data.suggestions[suggestion.content] = {
-                  type: 'bookmark',
-                  url: bookmark.url,
-                };
-
-                suggestions.push(suggestion);
-              }
-            });
-
-            resolve('using bookmarks');
-          });
-        } else {
-          resolve(`book: flag = ${flag}`);
-        }
-      })
-    );
-
-    // search history
-    promises.push(
-      new Promise((resolve, reject) => {
-        if (typeof flag === 'undefined' || flag === 'h') {
-          chrome.history.search({ text: text }, (history) => {
-            history.forEach((page, index) => {
-              let suggestion = {
-                content: `history: ${encodeHTML(page.title)}`,
-                description: `${encodeHTML(page.title)} - history`,
-              };
-
-              Data.suggestions[suggestion.content] = {
-                type: 'history',
-                url: page.url,
-              };
-
-              suggestions.push(suggestion);
-            });
-
-            resolve('using history');
-          });
-        } else {
-          resolve(`hist: flag = ${flag}`);
-        }
-      })
-    );
-
-    Promise.all(promises)
-      .then((v) => {
-        try {
-          if (suggestions.length) {
-            chrome.omnibox.setDefaultSuggestion({ description: suggestions[0].description });
-            Data.default = Data.suggestions[suggestions[0].content];
-            suggestions.shift();
-            suggest(suggestions);
-          }
-        } catch (e) {
-          console.trace(e, suggestions);
-        }
-      })
-      .catch((e) => {
-        console.trace(e);
-      });
+  if (!suggestions.length) {
+    return;
   }
+
+  Data.suggestions = {};
+  const omniSuggestions = [];
+  for (const suggestion of suggestions) {
+    const { content, description, type } = suggestion;
+    Data.suggestions[content] = { content, description, type, url: content };
+    omniSuggestions.push({ content, description });
+  }
+
+  Data.default = Data.suggestions[omniSuggestions[0].content];
+  // console.log(omniSuggestions);
+  suggest(omniSuggestions);
+  chrome.omnibox.setDefaultSuggestion({ description: omniSuggestions[0].description });
 });
 
 chrome.omnibox.onInputEntered.addListener((content) => {
-  // If the suggestion is undefined, it means the default suggestion was entered
-  let suggestion = Data.suggestions[content];
-  if (typeof suggestion === 'undefined') {
-    suggestion = Data.default;
-  }
+  const suggestion = Data.suggestions[content] || Data.default;
 
-  console.log(Data);
+  // console.log(suggestion, content);
+  // console.log(Data);
 
   switch (suggestion.type) {
     case 'bookmark':
       // Update the current tab's url
       chrome.tabs.getSelected(null, (tab) => {
-        chrome.tabs.update(tab.id, { url: suggestion.url });
+        if (/^javascript/.test(suggestion.url)) {
+          let code = suggestion.url.replace(/^\ *javascript\ *:\ */, '');
+          code = code.replace(/%([a-zA-Z0-9]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+          chrome.tabs.executeScript(tab.id, { code }, console.log);
+        } else {
+          chrome.tabs.update(tab.id, { url: suggestion.url });
+        }
       });
       break;
     case 'tab':
@@ -192,9 +73,3 @@ chrome.omnibox.onInputEntered.addListener((content) => {
       break;
   }
 });
-
-// chrome.commands.onCommand.addListener(command => {
-//     if (command == 'launch-googler') {
-//         //
-//     }
-// });

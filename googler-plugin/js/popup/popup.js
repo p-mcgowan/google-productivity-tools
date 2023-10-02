@@ -2,7 +2,7 @@
  * Handles all the popup stuff (usually activated by the keyboard)
  */
 
-let onSelect = (index, ctrl, shift) => {
+const onSelect = (index, ctrl, shift) => {
   loadingSuggestions
     .then(() => {
       let suggestion = suggestionResults[index];
@@ -63,6 +63,7 @@ let onSelect = (index, ctrl, shift) => {
             index,
             suggestionResults,
             error: `Uknown suggestion type: ${suggestion.type}`,
+            suggestion,
           });
           return;
       }
@@ -75,72 +76,64 @@ let onSelect = (index, ctrl, shift) => {
 
 let suggestionResults = [];
 
-let doSuggestions = (e, text) => {
-  suggestionResults = [];
+const doSuggestions = async (e, text) => {
+  suggestionResults.length = 0;
 
-  return Suggester.getSuggestions(text).then((res) => {
-    suggestionResults = res;
-    console.log({ text, res });
-    let results = document.getElementById('modalResults');
-    results.innerHTML = '';
+  suggestionResults = await Suggester.getSuggestions(text);
+  console.log({ text, suggestionResults });
+  const results = document.getElementById('modalResults');
+  results.innerHTML = '';
+  selectIndex = 0;
 
-    selectIndex = 0;
+  for (let i = 0; i < suggestionResults.length; i++) {
+    const result = suggestionResults[i];
 
-    let count = 0;
-    res.forEach((r) => {
-      let el = document.createElement('div');
-      el.classList.add('selection');
-      el.innerHTML = r.description;
-      if (!count) {
-        el.setAttribute('selected', '');
-      }
+    const el = document.createElement('div');
+    el.classList.add('selection');
+    el.innerHTML = result.display;
+    el.title = `${result.description} [${/^javascript:/.test(result.content) ? 'bookmarklet' : result.content}]`;
 
-      el.setAttribute('number', count);
-
-      el.addEventListener('click', (e) => {
-        onSelect(el.getAttribute('number'), e.ctrlKey, e.shiftKey);
-      });
-
-      results.appendChild(el);
-      count++;
+    el.setAttribute('number', i);
+    el.addEventListener('click', () => onSelect(el.getAttribute('number'), e.ctrlKey, e.shiftKey));
+    el.addEventListener('mouseenter', () => {
+      selectIndex = i;
+      updateActive();
     });
 
-    updateActive();
-    return;
-  });
+    results.appendChild(el);
+  }
+
+  updateActive();
 };
 
 let selectIndex = 0;
-let oldIndex = 0;
 let loadingSuggestions = Promise.resolve();
 
-let updateActive = () => {
-  let suggestionElements = document.getElementsByClassName('selection');
-  if (suggestionElements.length) {
-    if (oldIndex !== selectIndex) {
-      suggestionElements[oldIndex % suggestionElements.length].removeAttribute('selected');
-      suggestionElements[selectIndex % suggestionElements.length].setAttribute('selected', '');
-    }
+const updateActive = () => {
+  const suggestionElements = document.querySelectorAll('.selection');
+  if (!suggestionElements?.length) {
+    return;
   }
+  document.querySelector('.selection[selected]')?.removeAttribute?.('selected');
+  suggestionElements[selectIndex].setAttribute('selected', '');
 };
 
 document.onkeydown = (e) => {
-  oldIndex = selectIndex;
-  switch (e.keyCode) {
-    case 40 /* down */:
-      selectIndex++;
+  switch (e.key) {
+    case 'ArrowDown':
+      selectIndex = (selectIndex + 1) % suggestionResults.length;
       e.preventDefault();
       updateActive();
       break;
-    case 38 /* up */:
+    case 'ArrowUp':
       selectIndex--;
       if (selectIndex == -1) {
-        selectIndex = suggestionResults.length;
+        selectIndex = suggestionResults.length - 1;
       }
       e.preventDefault();
       updateActive();
       break;
-    case 13 /* enter */:
+    case 'Enter':
       onSelect(selectIndex, e.ctrlKey, e.shiftKey);
       break;
     default:
@@ -150,18 +143,14 @@ document.onkeydown = (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   let settings = document.getElementById('settingsButton');
-  settings.addEventListener('click', () => {
-    chrome.runtime.openOptionsPage();
-  });
+  settings.addEventListener('click', () => chrome.runtime.openOptionsPage());
 
   let input = document.getElementById('modalInput');
   input.focus();
   const debouncer = new Debounce();
   input.addEventListener(
     'input',
-    debouncer.run((event) => {
-      loadingSuggestions = doSuggestions(event, event.target.value);
-    }, 100)
+    debouncer.run((event) => (loadingSuggestions = doSuggestions(event, event.target.value)), 100)
   );
 });
 
