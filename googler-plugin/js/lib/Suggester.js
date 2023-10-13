@@ -16,6 +16,10 @@ class Suggester {
       .replace(/'/g, '&apos;');
   }
 
+  static normalizeText(text) {
+    return text?.replace?.(/\W+/g, ' ');
+  }
+
   static getSuggestions(text) {
     return new Promise((resolve, reject) => {
       if (!text || text?.length <= 1) {
@@ -34,16 +38,19 @@ class Suggester {
 
       // console.log(flag);
 
+      const normalSearch = this.normalizeText(text);
+      const normalReplace = new RegExp(normalSearch.replace(/\ /g, '.'), 'g');
+
       Promise.all([
-        this.searchBookmarks(flag, text),
-        this.searchHistory(flag, text),
-        this.searchTabs(flag, text),
-        this.luckySearch(flag, text),
+        this.searchBookmarks(flag, text, normalReplace),
+        this.searchHistory(flag, text, normalReplace),
+        this.searchTabs(flag, text, normalReplace),
+        this.luckySearch(flag, text, normalReplace),
       ])
         .then((results) => {
           // console.log(results);
 
-          return resolve([].concat(...results).sort((a, b) => this.getSortValue(a, text) - this.getSortValue(b, text)));
+          return resolve([].concat(...results).sort((a, b) => this.getSortValue(a, normalSearch) - this.getSortValue(b, normalSearch)));
         })
         .catch((e) => {
           console.trace.bind(window.console)(e);
@@ -54,7 +61,8 @@ class Suggester {
   }
 
   static getSortValue(suggestion, query) {
-    const { description, content } = suggestion;
+    const description = suggestion.searchDescription;
+    const content = suggestion.searchContent;
 
     let index = description.indexOf(query);
     if (index !== -1) {
@@ -73,7 +81,7 @@ class Suggester {
     return Infinity;
   }
 
-  static searchBookmarks(flag, text) {
+  static searchBookmarks(flag, text, normalReplace) {
     return new Promise((resolve) => {
       if (typeof flag !== 'undefined' && flag !== 'b') {
         return resolve([]);
@@ -95,7 +103,9 @@ class Suggester {
             content,
             type: 'bookmark',
             url: bookmark.url,
-            display: `${icon} ${description.replace(text, `<em>${text}</em>`)}`,
+            display: `${icon} ${description.replace(normalReplace, x => `<em>${x}</em>`)}`,
+            searchDescription: this.normalizeText(description),
+            searchContent: this.normalizeText(content),
           });
         });
 
@@ -104,7 +114,7 @@ class Suggester {
     });
   }
 
-  static searchHistory(flag, text) {
+  static searchHistory(flag, text, normalReplace) {
     return new Promise((resolve) => {
       if (typeof flag !== 'undefined' && flag !== 'h') {
         return resolve([]);
@@ -120,7 +130,9 @@ class Suggester {
             content: description,
             type: 'history',
             url: page.url,
-            display: `${this.icon.history} ${description.replace(text, `<em>${text}</em>`)}`,
+            display: `${this.icon.history} ${description.replace(normalReplace, x => `<em>${x}</em>`)}`,
+            searchDescription: this.normalizeText(description),
+            searchContent: this.normalizeText(description),
           });
         });
 
@@ -129,7 +141,7 @@ class Suggester {
     });
   }
 
-  static searchTabs(flag, text) {
+  static searchTabs(flag, text, normalReplace) {
     return new Promise((resolve) => {
       if (typeof flag !== 'undefined' && flag !== 't') {
         return resolve([]);
@@ -146,7 +158,9 @@ class Suggester {
             type: 'tab',
             windowId: tab.windowId,
             tabId: tab.id,
-            display: `${this.icon.tab} ${description.replace(text, `<em>${text}</em>`)}`,
+            display: `${this.icon.tab} ${description.replace(normalReplace, x => `<em>${x}</em>`)}`,
+            searchDescription: this.normalizeText(description),
+            searchContent: this.normalizeText(description),
           });
         });
 
@@ -155,7 +169,7 @@ class Suggester {
     });
   }
 
-  static luckySearch(flag, text) {
+  static luckySearch(flag, text, normalReplace) {
     return new Promise((resolve) => {
       if (flag !== 'l') {
         return resolve([]);
@@ -168,7 +182,9 @@ class Suggester {
         content: `lucky search: ${description}`,
         type: 'lucky',
         url: `http://google.ca/search?btnI=1&q=${text}`,
-        display: description.replace(text, `<em>${text}</em>`),
+        display: description.replace(normalReplace, x => `<em>${x}</em>`),
+        searchDescription: this.normalizeText(description),
+        searchContent: this.normalizeText(description),
       });
 
       resolve(suggestions);
