@@ -89,8 +89,9 @@ const doSuggestions = async (e, text) => {
     const result = suggestionResults[i];
 
     const el = document.createElement('div');
+    const url = /^javascript:/.test(result.content) ? 'bookmarklet' : result.content;
     el.classList.add('selection');
-    el.innerHTML = result.display;
+    el.innerHTML = `${result.display} <span class="url">${url}</span>`;
     el.title = `${result.description} [${/^javascript:/.test(result.content) ? 'bookmarklet' : result.content}]`;
 
     el.setAttribute('number', i);

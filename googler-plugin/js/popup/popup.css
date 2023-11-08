@@ -56,10 +56,16 @@ body {
   font-style: initial;
   font-weight: 700;
 }
+
 .selection i {
   font-size: 1rem;
   margin-right: 0.25rem;
   vertical-align: bottom;
+}
+
+.selection span.url {
+  font-size: 0.70rem;
+  font-weight: 300;
 }
 
 #modalResults .selection[selected] {
