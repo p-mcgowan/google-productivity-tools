@@ -105,8 +105,8 @@ const reds = (fadeSubreddits) => {
   }
 };
 
-chrome.storage.onChanged.addListener(() => {
-  chrome.storage.sync.get(['enabled', 'ignored'], (items) => {
+chrome.storage.local.onChanged.addListener(() => {
+  chrome.storage.local.get(['enabled', 'ignored'], (items) => {
     if (items.enabled) {
       document.body.classList.add('beddit-enabled');
     } else {
@@ -116,7 +116,7 @@ chrome.storage.onChanged.addListener(() => {
     reds(items.ignored);
   });
 });
-chrome.storage.sync.get(['enabled', 'ignored'], (items) => {
+chrome.storage.local.get(['enabled', 'ignored'], (items) => {
   if (items.enabled) {
     document.body.classList.add('beddit-enabled');
   } else {

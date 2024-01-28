@@ -11,17 +11,28 @@ const mapIgnored = (subs) => {
   return ignored;
 };
 
+let timeout = -1;
+
 const saveOptions = () => {
-  chrome.storage.sync.set({
-    enabled: document.getElementById('enabled').checked,
-    ignored: mapIgnored(document.getElementById('ignored').value),
-  });
+  const ignored = mapIgnored(document.getElementById('ignored').value);
+  const enabled = document.getElementById('enabled').checked;
+
+  chrome.storage.local.set({ enabled, ignored });
+
+  clearTimeout(timeout);
+  timeout = setTimeout(() => chrome.storage.sync.set({ enabled, ignored }), 5000);
 };
 
 const restoreOptions = () => {
-  chrome.storage.sync.get(['enabled', 'ignored'], (items) => {
-    document.getElementById('enabled').checked = items.enabled || false;
-    document.getElementById('ignored').value = Object.keys(items.ignored || {}).join('\n');
+  chrome.storage.local.get(['enabled', 'ignored'], (local) => {
+    document.getElementById('enabled').checked = local.enabled || false;
+    document.getElementById('ignored').value = Object.keys(local.ignored || {}).join('\n');
+
+    chrome.storage.sync.get(['enabled', 'ignored'], (remote) => {
+      const items = { ...remote, ...local };
+      document.getElementById('enabled').checked = items.enabled || false;
+      document.getElementById('ignored').value = Object.keys(items.ignored || {}).join('\n');
+    });
   });
 };
 
