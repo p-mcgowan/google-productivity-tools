@@ -10,7 +10,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://old.reddit.com/*"],
+      "matches": ["*://old.reddit.com/*", "https://www.reddit.com/media*"],
       "js": ["content.js"]
     },
     {

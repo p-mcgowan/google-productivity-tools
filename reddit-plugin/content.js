@@ -88,9 +88,7 @@ const reds = (fadeSubreddits) => {
   `);
 
   document
-    .querySelectorAll(
-      '.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand',
-    )
+    .querySelectorAll('.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand')
     .forEach((expando) => {
       if (!expando || expando.innerHTML.indexOf('+') !== -1) {
         return;
@@ -125,3 +123,30 @@ chrome.storage.local.get(['enabled', 'ignored'], (items) => {
   }
   reds(items.ignored);
 });
+
+if (location.pathname === '/media') {
+  document.querySelector('html').style.height = '100%';
+  document.body.style.height = '100%';
+  document.body.style.display = 'grid';
+  document.body.style.placeContent = 'center';
+
+  const img = document.querySelector('img').cloneNode();
+  img.removeAttribute('class');
+  img.style.margin = '0 auto';
+  img.style.maxHeight = '100vh';
+  const toggleZoom = () => {
+    if (img.style.maxHeight) {
+      img.style.maxHeight = '';
+      img.style.maxWidth = '';
+      img.style.cursor = 'zoom-out';
+    } else {
+      img.style.maxHeight = '100vh';
+      img.style.maxWidth = '100vw';
+      img.style.cursor = 'zoom-in';
+    }
+  };
+  toggleZoom();
+  img.addEventListener('click', toggleZoom);
+  document.body.innerHTML = '';
+  document.body.append(img);
+}
