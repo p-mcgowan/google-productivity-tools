@@ -101,6 +101,10 @@ const reds = (fadeSubreddits) => {
   if (styleOn && styleOn.checked === true) {
     styleOn.click();
   }
+
+  document.querySelectorAll('p a[href^="https://preview.redd.it"]').forEach((a) => {
+    a.innerHTML = `<img src="${a.href}" width="400" />`;
+  });
 };
 
 chrome.storage.local.onChanged.addListener(() => {
