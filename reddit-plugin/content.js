@@ -131,8 +131,6 @@ chrome.storage.local.get(['enabled', 'ignored'], (items) => {
 if (location.pathname === '/media') {
   document.querySelector('html').style.height = '100%';
   document.body.style.height = '100%';
-  document.body.style.display = 'grid';
-  document.body.style.placeContent = 'center';
 
   const img = document.querySelector('img').cloneNode();
   img.removeAttribute('class');
