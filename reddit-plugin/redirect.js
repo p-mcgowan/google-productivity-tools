@@ -4,7 +4,7 @@ const noRedirects = [
   '/poll',
 ];
 
-chrome.storage.sync.get(['enabled'], (items) => {
+chrome.storage.local.get(['enabled'], (items) => {
   if (!items.enabled) {
     return;
   }
