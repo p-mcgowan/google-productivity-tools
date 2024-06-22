@@ -141,10 +141,14 @@ if (location.pathname === '/media') {
       img.style.maxHeight = '';
       img.style.maxWidth = '';
       img.style.cursor = 'zoom-out';
+      document.body.style.display = 'initial';
+      document.body.style.placeContent = 'initial';
     } else {
       img.style.maxHeight = '100vh';
       img.style.maxWidth = '100vw';
       img.style.cursor = 'zoom-in';
+      document.body.style.display = 'grid';
+      document.body.style.placeContent = 'center';
     }
   };
   toggleZoom();
