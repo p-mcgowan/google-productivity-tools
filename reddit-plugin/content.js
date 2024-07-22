@@ -22,8 +22,14 @@ const assertStyle = (sheet) => {
 const reds = (fadeSubreddits) => {
   const keys = Object.keys(fadeSubreddits)
     .reduce((filters, key) => {
+      if (key.indexOf('r/') === 0) {
+        return filters;
+      }
+
       if (key[0] === 't' && key[1] === '/') {
         filters.push(key.slice(2));
+      } else {
+        filters.push(key);
       }
 
       return filters;
