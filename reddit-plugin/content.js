@@ -1,12 +1,15 @@
 /* collapse comments and remove custom subreddit styles */
 
-const fadeSubreddit = (subredditAnchor) => {
+const fadeSubreddit = (subredditAnchor, reason) => {
   let thing = subredditAnchor;
   for (let i = 0; i < 4; ++i) {
     thing = thing?.parentElement || thing;
   }
   if (thing) {
     thing.classList.add('beddit-faded');
+    if (reason) {
+      thing.classList.add('beddit-' + reason);
+    }
   }
 };
 
@@ -40,7 +43,7 @@ const reds = (fadeSubreddits) => {
 
   document.querySelectorAll('a.subreddit').forEach((a) => {
     if (fadeSubreddits[a.innerText?.trim()?.toLowerCase()]) {
-      fadeSubreddit(a);
+      fadeSubreddit(a, 'text-match');
     }
     const title = a?.parentElement?.parentElement?.firstChild?.innerText?.toLowerCase?.();
     if (!title) {
@@ -48,7 +51,7 @@ const reds = (fadeSubreddits) => {
     }
 
     if (textFilter?.test?.(title)) {
-      fadeSubreddit(a);
+      fadeSubreddit(a, 'regex-match');
     }
   });
 
@@ -82,7 +85,7 @@ const reds = (fadeSubreddits) => {
     .beddit-enabled .beddit-tagline {
       font-size: 0px;
     }
-    .beddit-enabled .beddit-tagline time.live-timestamp,
+    .beddit-enabled .beddit-tagline time,
     .beddit-enabled .beddit-tagline a.subreddit,
     .beddit-enabled .beddit-tagline a.author {
       font-size: x-small;
