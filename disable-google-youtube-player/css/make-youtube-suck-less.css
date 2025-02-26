@@ -1,14 +1,14 @@
 /* remove shorts / news / crap  */
 ytd-rich-section-renderer:has(#dismissible) {
-  display: none;
+  display: none !important;
 }
 
 /* remove end of video cards  */
 .ytp-ce-element {
-  display: none;
+  display: none !important;
 }
 
 /* hide "includes paid promotions" thinger */
 .ytInlinePlayerControlsTopLeftControls {
-  display: none;
+  display: none !important;
 }
