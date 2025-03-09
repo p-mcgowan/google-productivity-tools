@@ -1,8 +1,4 @@
-const noRedirects = [
-  '/media',
-  '/gallery',
-  '/poll',
-];
+const noRedirects = ['/media', '/gallery', '/poll'];
 
 chrome.storage.local.get(['enabled'], (items) => {
   if (!items.enabled) {
@@ -10,7 +6,7 @@ chrome.storage.local.get(['enabled'], (items) => {
   }
   // allow i.reddit redirects
 
-  if (noRedirects.find(path => location.pathname.indexOf(path) === 0)) {
+  if (noRedirects.find((path) => location.pathname.indexOf(path) === 0)) {
     return;
   }
 

@@ -60,6 +60,16 @@ const reds = (fadeSubreddits) => {
 
   document.querySelectorAll(`.top-matter .tagline`).forEach((tagline) => tagline.classList.add('beddit-tagline'));
 
+  const pinnedVideo = document.querySelector('body > div.content .pinnable-placeholder .pinnable-content.pinned');
+  if (pinnedVideo) {
+    const video = pinnedVideo.querySelector('video');
+    if (video) {
+      video.autoplay = false;
+      video.pause();
+    }
+    pinnedVideo.querySelector('.dismiss-pinnable')?.click();
+  }
+
   hideIfPresent('body > div.side');
   hideIfPresent('body > div.content > section.infobar');
   hideIfPresent('#header-bottom-left > a');
@@ -97,7 +107,9 @@ const reds = (fadeSubreddits) => {
   `);
 
   document
-    .querySelectorAll('.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand')
+    .querySelectorAll(
+      '.commentarea > div.sitetable > .thing > .child > div.sitetable > div.thing > div.entry > p.tagline > a.expand',
+    )
     .forEach((expando) => {
       if (!expando || expando.innerHTML.indexOf('+') !== -1) {
         return;
