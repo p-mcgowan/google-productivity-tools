@@ -1,0 +1,4 @@
+/* remove ai results - doesnt block the call */
+[data-mcpr] {
+  display: none;
+}

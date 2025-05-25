@@ -11,7 +11,8 @@
         "https://*.google.ca/*",
         "https://*.google.de/*"
       ],
-      "js": ["js/disable-mini-player.js"]
+      "js": ["js/disable-mini-player.js"],
+      "css": ["css/hide-ai.css"]
     },
     {
       "matches": [

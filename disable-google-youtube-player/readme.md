@@ -4,6 +4,7 @@
 ## Google
 
 - disable youtube mini player - always redirect to full site
+- hide ai results
 
 
 ## Youtube
