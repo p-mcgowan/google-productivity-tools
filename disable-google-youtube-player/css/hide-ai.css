@@ -1,4 +1,4 @@
 /* remove ai results - doesnt block the call */
-[data-mcpr] {
+[id] :has(> div > div[data-mcpr]) {
   display: none;
 }
