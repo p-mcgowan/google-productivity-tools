@@ -123,7 +123,10 @@ const reds = (fadeSubreddits) => {
     styleOn.click();
   }
 
-  document.querySelectorAll('p a[href^="https://preview.redd.it"]').forEach((a) => {
+  document.querySelectorAll("a").forEach((a) => {
+    if (a.innerText !== "<image>") {
+      return;
+    }
     a.innerHTML = `<img src="${a.href}" width="400" />`;
   });
 };
