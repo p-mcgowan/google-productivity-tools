@@ -15,7 +15,10 @@ class VolumeControlledTab {
   async init(tabId) {
     this.tabId = tabId;
     this.stream = await new Promise((resolve, reject) => {
-      return chrome.tabCapture.capture({ audio: true, video: false }, (data, err) => err ? reject(err) : resolve(data));
+      return chrome.tabCapture.capture(
+        { audio: true, video: false },
+        (data, err) => (err ? reject(err) : resolve(data)),
+      );
     });
     this.audioContext = new AudioContext();
     this.streamSource = this.audioContext.createMediaStreamSource(this.stream);
@@ -40,15 +43,21 @@ class VolumeControlledTab {
     }
     await this.initialized;
 
-    return this.gainNode.gain.value = volume / 100;
+    return (this.gainNode.gain.value = volume / 100);
   }
 
   destruct() {
     if (this.stream) {
       console.log(this.stream.getAudioTracks());
-      this.stream.getAudioTracks().forEach(t => { this.stream.removeTrack(t); t.stop(); });
+      this.stream.getAudioTracks().forEach((t) => {
+        this.stream.removeTrack(t);
+        t.stop();
+      });
       console.log(this.stream.getVideoTracks());
-      this.stream.getVideoTracks().forEach(t => { this.stream.removeTrack(t); t.stop(); });
+      this.stream.getVideoTracks().forEach((t) => {
+        this.stream.removeTrack(t);
+        t.stop();
+      });
     }
     if (this.audioContext) {
       this.audioContext.close();
@@ -58,6 +67,7 @@ class VolumeControlledTab {
     this.audioContext = null;
     this.streamSource = null;
     this.gainNode = null;
+    console.log("killed");
   }
 }
 
@@ -67,7 +77,7 @@ const assertTab = (id) => {
   }
 
   return tabs[id];
-}
+};
 
 const destroyVolumeTab = (id) => {
   tabs[id]?.destruct?.();
@@ -77,15 +87,17 @@ const destroyVolumeTab = (id) => {
 
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   switch (message.name) {
-    case 'get-tab-volume':
+    case "get-tab-volume":
       assertTab(message.tabId).getVolume(message.tabId).then(respond);
       return true;
-    case 'set-tab-volume':
-      assertTab(message.tabId).setVolume(message.tabId, message.value).then(respond);
+    case "set-tab-volume":
+      assertTab(message.tabId)
+        .setVolume(message.tabId, message.value)
+        .then(respond);
       return true;
-    case 'clear-tab-volume':
-      assertTab(message.tabId).destruct()
-      respond('success');
+    case "clear-tab-volume":
+      assertTab(message.tabId).destruct();
+      respond("success");
       return true;
     default:
       console.error(message);
