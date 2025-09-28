@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Disable google youtube mini player - always redirect to youtube",
+  "name": "Google and youtube tweaks",
   "version": "1.0",
-  "description": "see name",
+  "description": "Disable youtube mini player, hide ai summaries, improve youtube ui",
   "content_scripts": [
     {
       "matches": [

@@ -16,3 +16,7 @@ ytd-rich-section-renderer:has(#dismissible) {
 .ytd-rich-grid-renderer {
   --ytd-rich-grid-items-per-row: 6;
 }
+
+.ytp-ce-hide-button-container {
+  display: none !important;
+}
