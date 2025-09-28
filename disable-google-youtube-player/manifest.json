@@ -20,7 +20,7 @@
         "https://www.youtube.com/*/*",
         "https://*.youtube.com/*"
       ],
-      "css": ["css/make-youtube-suck-less.css"]
+      "css": ["css/make-youtube-suck-less.css", "css/hide-ai.css"]
     }
   ]
 }

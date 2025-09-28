@@ -2,3 +2,7 @@
 [id] :has(> div > div[data-mcpr]) {
   display: none;
 }
+
+ytd-expandable-metadata-renderer.style-scope.ytd-watch-flexy {
+  display: none !important;
+}
