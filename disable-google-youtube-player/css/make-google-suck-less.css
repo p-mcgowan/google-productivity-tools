@@ -3,11 +3,9 @@
   display: none;
 }
 
-/*
-document.querySelectorAll('div[role="navigation"]:first-of-type div[role="list"]:first-of-type a').forEach(a => console.log(a.innerText, a.href ? new URL(a.href).searchParams.get('udm') : ''));
-*/
+/* Hide ai mode, products, short videos, etc  */
+/* document.querySelectorAll('div[role="navigation"]:first-of-type div[role="list"]:first-of-type a').forEach(a => console.log(a.innerText, a.href ? new URL(a.href).searchParams.get('udm') : '')); */
 div[role="navigation"]:first-of-type div[role="list"]:first-of-type {
-  /* Hide ai mode, products, short videos, etc  */
   div[role="listitem"]:has(
       a[href*="udm=50"], /* ai mode */
       > a[href*="udm=3"], /* products */
@@ -17,3 +15,23 @@ div[role="navigation"]:first-of-type div[role="list"]:first-of-type {
     display: none;
   }
 }
+
+/* remove "people also ask" and "images" sections */
+#search #rso {
+  /* people also ask */
+  > div:has(> div > div[data-initq]) {
+    display: none;
+  }
+
+  /* images, forums, products */
+  div.ULSxyf, div:has(g-card) {
+    display: none;
+  }
+}
+
+/* bottom results (also searched for) */
+#bres {
+  display: none;
+}
+
+/* document.querySelectorAll('#search #rso > div:has(g-card)') */
