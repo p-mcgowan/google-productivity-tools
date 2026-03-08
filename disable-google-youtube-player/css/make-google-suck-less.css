@@ -1,0 +1,19 @@
+/* remove ai results - doesnt block the call */
+[id] :has(> div > div[data-mcpr]) {
+  display: none;
+}
+
+/*
+document.querySelectorAll('div[role="navigation"]:first-of-type div[role="list"]:first-of-type a').forEach(a => console.log(a.innerText, a.href ? new URL(a.href).searchParams.get('udm') : ''));
+*/
+div[role="navigation"]:first-of-type div[role="list"]:first-of-type {
+  /* Hide ai mode, products, short videos, etc  */
+  div[role="listitem"]:has(
+      a[href*="udm=50"], /* ai mode */
+      > a[href*="udm=3"], /* products */
+      > a[href*="udm=9"], /* product websites */
+      > a[href*="udm=39"] /* short videos */
+  ) {
+    display: none;
+  }
+}

@@ -20,3 +20,8 @@ ytd-rich-section-renderer:has(#dismissible) {
 .ytp-ce-hide-button-container {
   display: none !important;
 }
+
+/* remove ai results - doesnt block the call */
+ytd-expandable-metadata-renderer.style-scope.ytd-watch-flexy {
+  display: none !important;
+}

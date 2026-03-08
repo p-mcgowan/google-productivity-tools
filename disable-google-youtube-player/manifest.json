@@ -12,7 +12,7 @@
         "https://*.google.de/*"
       ],
       "js": ["js/disable-mini-player.js"],
-      "css": ["css/hide-ai.css"]
+      "css": ["css/make-google-suck-less.css"]
     },
     {
       "matches": [
@@ -20,7 +20,7 @@
         "https://www.youtube.com/*/*",
         "https://*.youtube.com/*"
       ],
-      "css": ["css/make-youtube-suck-less.css", "css/hide-ai.css"]
+      "css": ["css/make-youtube-suck-less.css"]
     }
   ]
 }
