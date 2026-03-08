@@ -30,9 +30,9 @@ const reds = (fadeSubreddits) => {
       }
 
       if (key[0] === 't' && key[1] === '/') {
-        filters.push(key.slice(2));
+        filters.push('\\b' + key.slice(2) + '\\b');
       } else {
-        filters.push(key);
+        filters.push('\\b' + key + '\\b');
       }
 
       return filters;
