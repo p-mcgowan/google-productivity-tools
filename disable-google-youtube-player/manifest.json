@@ -11,7 +11,7 @@
         "https://*.google.ca/*",
         "https://*.google.de/*"
       ],
-      "js": ["js/disable-mini-player.js"],
+      "js": ["js/disable-mini-player.js","js/cleanup-google-results.js"],
       "css": ["css/make-google-suck-less.css"]
     },
     {
