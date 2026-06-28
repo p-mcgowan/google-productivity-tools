@@ -64,12 +64,14 @@ body {
 }
 
 .selection span.url {
-  font-size: 0.70rem;
+  font-size: 0.7rem;
   font-weight: 300;
 }
 
 #modalResults .selection[selected] {
-  box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0, rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
+  box-shadow:
+    rgba(60, 64, 67, 0.3) 0 1px 2px 0,
+    rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
   cursor: pointer;
   background-color: rgba(116, 163, 185, 0.4);
 }
@@ -81,5 +83,7 @@ body {
 }
 
 #settingsButton:hover {
-  box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0, rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
+  box-shadow:
+    rgba(60, 64, 67, 0.3) 0 1px 2px 0,
+    rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
 }

@@ -6,11 +6,11 @@ const Data = { suggestions: {}, default: {} };
 
 const encodeHTML = (str) => {
   return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 };
 
 chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
@@ -31,7 +31,9 @@ chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
   Data.default = Data.suggestions[omniSuggestions[0].content];
   // console.log(omniSuggestions);
   suggest(omniSuggestions);
-  chrome.omnibox.setDefaultSuggestion({ description: omniSuggestions[0].description });
+  chrome.omnibox.setDefaultSuggestion({
+    description: omniSuggestions[0].description,
+  });
 });
 
 chrome.omnibox.onInputEntered.addListener((content) => {
@@ -41,31 +43,34 @@ chrome.omnibox.onInputEntered.addListener((content) => {
   // console.log(Data);
 
   switch (suggestion.type) {
-    case 'bookmark':
+    case "bookmark":
+    case "search":
       // Update the current tab's url
       chrome.tabs.getSelected(null, (tab) => {
         if (/^javascript/.test(suggestion.url)) {
-          let code = suggestion.url.replace(/^\ *javascript\ *:\ */, '');
-          code = code.replace(/%([a-zA-Z0-9]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+          let code = suggestion.url.replace(/^\ *javascript\ *:\ */, "");
+          code = code.replace(/%([a-zA-Z0-9]{2})/g, (_, hex) =>
+            String.fromCharCode(parseInt(hex, 16)),
+          );
           chrome.tabs.executeScript(tab.id, { code }, console.log);
         } else {
           chrome.tabs.update(tab.id, { url: suggestion.url });
         }
       });
       break;
-    case 'tab':
+    case "tab":
       // Change to the target tab (and window if applicable)
       chrome.windows.update(suggestion.windowId, { focused: true }, (w) => {
         chrome.tabs.update(suggestion.tabId, { active: true });
       });
       break;
-    case 'history':
+    case "history":
       // Update the current tab's url
       chrome.tabs.getSelected(null, (tab) => {
         chrome.tabs.update(tab.id, { url: suggestion.url });
       });
       break;
-    case 'lucky':
+    case "lucky":
       // Update the current tab's url
       chrome.tabs.getSelected(null, (tab) => {
         chrome.tabs.update(tab.id, { url: suggestion.url });

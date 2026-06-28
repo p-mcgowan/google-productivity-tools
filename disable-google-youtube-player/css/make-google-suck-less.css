@@ -14,8 +14,8 @@
   background-color: var(--dgyp-bg);
 }
 
-/* non search results */
-#rso .ULSxyf {
+/* non search results - keep the conversion / math widget */
+#rso .ULSxyf:not(:has(.wDYxhc)) {
   display: var(--dgyp-display);
   background-color: var(--dgyp-bg);
 }

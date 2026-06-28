@@ -11,10 +11,7 @@
     "default_popup": "js/popup/popup.html"
   },
   "background": {
-    "scripts": [
-      "js/lib/Suggester.js",
-      "js/background/background.js"
-    ],
+    "scripts": ["js/lib/Suggester.js", "js/background/background.js"],
     "persistent": false
   },
   "options_ui": {
