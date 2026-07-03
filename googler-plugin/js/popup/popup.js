@@ -18,7 +18,7 @@ const onSelect = (index, ctrl, shift) => {
         case "search":
           // Update the current tab's url, or if ctrl-enter pressed, a new tab
           if (!ctrl) {
-            chrome.tabs.getSelected(null, (tab) => {
+            chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
               if (/^javascript/.test(suggestion.url)) {
                 let code = suggestion.url.replace(/^\ *javascript\ *:\ */, "");
                 code = code.replace(/%([a-zA-Z0-9]{2})/g, (_, hex) =>
@@ -44,7 +44,7 @@ const onSelect = (index, ctrl, shift) => {
         case "history":
           // Update the current tab's url
           if (!ctrl) {
-            chrome.tabs.getSelected(null, (tab) => {
+            chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
               chrome.tabs.update(tab.id, { url: suggestion.url });
               window.close();
             });
@@ -55,7 +55,7 @@ const onSelect = (index, ctrl, shift) => {
         case "lucky":
           // Update the current tab's url
           if (!ctrl) {
-            chrome.tabs.getSelected(null, (tab) => {
+            chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
               chrome.tabs.update(tab.id, { url: suggestion.url });
               window.close();
             });
