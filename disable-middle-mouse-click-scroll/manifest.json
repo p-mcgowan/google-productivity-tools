@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Disable middle mouse scrolling on windows",
   "version": "0.0.1",
   "description": "see name",

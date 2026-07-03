@@ -1,8 +1,8 @@
 {
+  "manifest_version": 3,
   "name": "Reds plugin",
   "description": "Redirect 'www' or 'new' to 'old', remove styling",
   "version": "0.0.1",
-  "manifest_version": 2,
   "permissions": ["webRequest", "*://*.reddit.com/*", "webRequestBlocking", "storage"],
   "browser_action": {
     "default_popup": "options/toggle.html",
