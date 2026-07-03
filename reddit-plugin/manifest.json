@@ -3,8 +3,8 @@
   "name": "Reds plugin",
   "description": "Redirect 'www' or 'new' to 'old', remove styling",
   "version": "0.0.1",
-  "permissions": ["webRequest", "*://*.reddit.com/*", "webRequestBlocking", "storage"],
-  "browser_action": {
+  "permissions": ["webRequest", "webRequestBlocking", "storage"],
+  "action": {
     "default_popup": "options/toggle.html",
     "default_icon": "green-reddit16x16.png"
   },

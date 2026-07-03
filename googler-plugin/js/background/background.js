@@ -3,6 +3,7 @@
  */
 // Hash for suggestion data
 const Data = { suggestions: {}, default: {} };
+import {Suggester} from './js/lib/Suggester.js'
 
 const encodeHTML = (str) => {
   return str
