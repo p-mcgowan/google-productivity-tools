@@ -24,13 +24,19 @@
     "activeTab",
     "bookmarks",
     "history",
-    "tabs"
+    "tabs",
+    "scripting",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
   ],
   "action": {
     "default_icon": "googler.png",
     "default_popup": "js/popup/popup.html"
   },
-  "host_permissions": [
-    "https://ajax.googleapis.com/"
-  ]
+  "host_permissions": ["https://ajax.googleapis.com/"],
+  "declarative_net_request": {
+    "rule_resources": [
+      { "id": "disable-csp", "enabled": true, "path": "csp.json" }
+    ]
+  }
 }

@@ -5,7 +5,25 @@ let loadingSuggestions = Promise.resolve();
 let suggestionResults = [];
 let selectIndex = 0;
 
-const onSelect = (index, ctrl, shift) => {
+// fails when CSP forbids unsafe-inline
+// TODO: https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#example
+const v3WorkaroundRunBookmarklet = async (code) => {
+  const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: (code) => {
+      const el = document.createElement('script');
+      el.textContent = code;
+      document.documentElement.appendChild(el);
+      el.remove();
+    },
+    args: [code],
+    world: 'MAIN',
+    injectImmediately: true,
+  });
+};
+
+const onSelect = async (index, ctrl, shift) => {
   loadingSuggestions
     .then(() => {
       let suggestion = suggestionResults[index];
@@ -14,17 +32,15 @@ const onSelect = (index, ctrl, shift) => {
       }
 
       switch (suggestion.type) {
-        case "bookmark":
-        case "search":
+        case 'bookmark':
+        case 'search':
           // Update the current tab's url, or if ctrl-enter pressed, a new tab
           if (!ctrl) {
-            chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
+            chrome.tabs.query({ active: true, lastFocusedWindow: true }, async ([tab]) => {
               if (/^javascript/.test(suggestion.url)) {
-                let code = suggestion.url.replace(/^\ *javascript\ *:\ */, "");
-                code = code.replace(/%([a-zA-Z0-9]{2})/g, (_, hex) =>
-                  String.fromCharCode(parseInt(hex, 16)),
-                );
-                chrome.tabs.executeScript(tab.id, { code }, console.log);
+                let code = suggestion.url.replace(/^\ *javascript\ *:\ */, '');
+                code = code.replace(/%([a-zA-Z0-9]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+                await v3WorkaroundRunBookmarklet(code);
               } else {
                 chrome.tabs.update(tab.id, { url: suggestion.url });
               }
@@ -34,14 +50,14 @@ const onSelect = (index, ctrl, shift) => {
             chrome.tabs.create({ url: suggestion.url, active: shift });
           }
           break;
-        case "tab":
+        case 'tab':
           // Change to the target tab (and window if applicable)
           chrome.windows.update(suggestion.windowId, { focused: true }, (w) => {
             chrome.tabs.update(suggestion.tabId, { active: true });
             window.close();
           });
           break;
-        case "history":
+        case 'history':
           // Update the current tab's url
           if (!ctrl) {
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
@@ -52,7 +68,7 @@ const onSelect = (index, ctrl, shift) => {
             chrome.tabs.create({ url: suggestion.url, active: shift });
           }
           break;
-        case "lucky":
+        case 'lucky':
           // Update the current tab's url
           if (!ctrl) {
             chrome.tabs.query({ active: true, lastFocusedWindow: true }, ([tab]) => {
@@ -84,26 +100,22 @@ const doSuggestions = async (e, text) => {
   suggestionResults.length = 0;
 
   suggestionResults = await Suggester.getSuggestions(text);
-  const results = document.getElementById("modalResults");
-  results.innerHTML = "";
+  const results = document.getElementById('modalResults');
+  results.innerHTML = '';
   selectIndex = 0;
 
   for (let i = 0; i < suggestionResults.length; i++) {
     const result = suggestionResults[i];
 
-    const el = document.createElement("div");
-    const url = /^javascript:/.test(result.content)
-      ? "bookmarklet"
-      : result.content;
-    el.classList.add("selection");
+    const el = document.createElement('div');
+    const url = /^javascript:/.test(result.content) ? 'bookmarklet' : result.content;
+    el.classList.add('selection');
     el.innerHTML = `${result.display} <span class="url">${url}</span>`;
-    el.title = `${result.description} [${/^javascript:/.test(result.content) ? "bookmarklet" : result.content}]`;
+    el.title = `${result.description} [${/^javascript:/.test(result.content) ? 'bookmarklet' : result.content}]`;
 
-    el.setAttribute("number", i);
-    el.addEventListener("click", () =>
-      onSelect(el.getAttribute("number"), e.ctrlKey, e.shiftKey),
-    );
-    el.addEventListener("mouseenter", () => {
+    el.setAttribute('number', i);
+    el.addEventListener('click', () => onSelect(el.getAttribute('number'), e.ctrlKey, e.shiftKey));
+    el.addEventListener('mouseenter', () => {
       selectIndex = i;
       updateActive();
     });
@@ -115,22 +127,22 @@ const doSuggestions = async (e, text) => {
 };
 
 const updateActive = () => {
-  const suggestionElements = document.querySelectorAll(".selection");
+  const suggestionElements = document.querySelectorAll('.selection');
   if (!suggestionElements?.length) {
     return;
   }
-  document.querySelector(".selection[selected]")?.removeAttribute?.("selected");
-  suggestionElements[selectIndex].setAttribute("selected", "");
+  document.querySelector('.selection[selected]')?.removeAttribute?.('selected');
+  suggestionElements[selectIndex].setAttribute('selected', '');
 };
 
 document.onkeydown = debounce((e) => {
   switch (e.key) {
-    case "ArrowDown":
+    case 'ArrowDown':
       selectIndex = (selectIndex + 1) % suggestionResults.length;
       e.preventDefault();
       updateActive();
       break;
-    case "ArrowUp":
+    case 'ArrowUp':
       selectIndex--;
       if (selectIndex == -1) {
         selectIndex = suggestionResults.length - 1;
@@ -138,7 +150,7 @@ document.onkeydown = debounce((e) => {
       e.preventDefault();
       updateActive();
       break;
-    case "Enter":
+    case 'Enter':
       onSelect(selectIndex, e.ctrlKey, e.shiftKey);
       break;
     default:
@@ -146,19 +158,15 @@ document.onkeydown = debounce((e) => {
   }
 }, 100);
 
-document.addEventListener("DOMContentLoaded", () => {
-  let settings = document.getElementById("settingsButton");
-  settings.addEventListener("click", () => chrome.runtime.openOptionsPage());
+document.addEventListener('DOMContentLoaded', () => {
+  let settings = document.getElementById('settingsButton');
+  settings.addEventListener('click', () => chrome.runtime.openOptionsPage());
 
-  let input = document.getElementById("modalInput");
+  let input = document.getElementById('modalInput');
   input.focus();
   input.addEventListener(
-    "input",
-    debounce(
-      (event) =>
-        (loadingSuggestions = doSuggestions(event, event.target.value)),
-      100,
-    ),
+    'input',
+    debounce((event) => (loadingSuggestions = doSuggestions(event, event.target.value)), 100),
   );
 });
 
